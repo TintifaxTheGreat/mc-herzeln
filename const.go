@@ -6,4 +6,3 @@ const (
 	FIGURES int = 8
 	INHAND int = 8
 )
-

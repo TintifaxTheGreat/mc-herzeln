@@ -13,10 +13,3 @@ func NewCardpool() *Cardpool {
 	c.dropped = *NewBitcard(false)
 	return c
 }
-
-/*
-func main() {
-	foo := NewCardpool()
-	fmt.Print(foo)
-}
-*/

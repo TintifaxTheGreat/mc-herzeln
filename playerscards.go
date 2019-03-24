@@ -1,7 +1,7 @@
 package main
 
 type PlayersCards struct {
-	c [COLORS]Bitcard
+	c [PLAYERS]Bitcard
 }
 
 func NewPlayersCards() *PlayersCards {
