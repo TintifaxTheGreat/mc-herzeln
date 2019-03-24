@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 type Cardpool struct {
 	notDropped Bitcard
 	onTable    Bitcard
@@ -16,7 +14,9 @@ func NewCardpool() *Cardpool {
 	return c
 }
 
+/*
 func main() {
 	foo := NewCardpool()
 	fmt.Print(foo)
 }
+*/

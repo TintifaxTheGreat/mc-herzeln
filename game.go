@@ -8,44 +8,55 @@ const (
 	AGENT_MCTS
 )
 
-const (
-	NOT_DROPPED = 0
-	ON_TABLE    = 1
-	DROPPED     = 2
-	IN_HAND     = 0
-	IN_TRICKS   = 1
-)
-
 type Game struct {
 	players     int
 	colors      int
 	figures     int
 	cardsInHand int
-	agent       [4]Agent
-	//cardpool	*tensor.Dense
-	cardpool [4][8][3]uint8
+	agent       [PLAYERS]Agent
+	cardpool    *Cardpool
 }
 
 func NewGame() *Game {
-	p := new(Game)
-	p.players = 4
-	p.colors = 4
-	p.figures = 8
-	p.cardsInHand = 8
-	p.agent = [4]Agent{AGENT_HUMAN, AGENT_RANDOM, AGENT_RANDOM, AGENT_RANDOM}
+	g := new(Game)
+	g.cardsInHand = 8
+	g.agent = [4]Agent{AGENT_HUMAN, AGENT_RANDOM, AGENT_RANDOM, AGENT_RANDOM}
 
 	// create the cardpool
-	p.cardpool = [4][8][3]uint8{}
-	//p.cardpool = tensor.New(tensor.WithShape(p.colors, p.figures, 3), tensor.Of(tensor.Uint8))
+	g.cardpool = NewCardpool()
+
+	// TODO create helpers
+
+	// TODO add the agents stuff here
+
+
+	return g
+}
+
+func (g *Game) Start() {
+	g.dealCards()
+}
+
+func (g *Game) dealCards() {
+	for player := 0; player < PLAYERS; player++ {
+		for i := 0; i < INHAND; i++ {
+			// TODO RAndom stuff
+		}
+
+	}
+
 
 	/*
-
-		self.cardpool = np.zeros((self.COLORS, self.FIGURES, 3), dtype=bool)
-		self.cardpool[:, :, NOT_DROPPED] = 1
-
+	count_cards = self.CARDS_IN_HAND
+	for player in range(self.PLAYERS):
+	for i in range(self.CARDS_IN_HAND):
+	card = self.random(self.cardpool[:, :, NOT_DROPPED])
+	self.move(
+	card,
+	self.cardpool[:, :, NOT_DROPPED],
+	self.cards[:, :, player, IN_HAND]
 	*/
 
-	return p
 }
 
 /*
