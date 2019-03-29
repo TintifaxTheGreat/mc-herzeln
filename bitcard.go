@@ -12,6 +12,11 @@ var CARDSTRINGS = [COLORS * FIGURES]string{
 	"EA", "EK", "EO", "EU", "EX", "E9", "E8", "E7",
 }
 
+type CardValue struct {
+	player int
+	value int
+}
+
 type Bitcard struct {
 	c bit.Set
 }
@@ -25,7 +30,7 @@ func NewBitcard(set bool) *Bitcard {
 	return b
 }
 
-func (b *Bitcard) ToString(cardstrings [COLORS * FIGURES]string) string {
+func (b *Bitcard) ToString() string {
 	var s string = ""
 	var thisItem int = 0
 	var nextItem int
@@ -34,22 +39,30 @@ func (b *Bitcard) ToString(cardstrings [COLORS * FIGURES]string) string {
 		if -1 == nextItem {
 			break
 		}
-		s += cardstrings[nextItem-1] + " "
+		s += CARDSTRINGS[nextItem-1] + " "
 		thisItem = nextItem
 
 	}
 	return s
 }
 
-// draw random bitcard and move it to other bitcard
-func (bFrom *Bitcard) DrawRandom(bTo *Bitcard) {
-	size := bFrom.c.Size()-1
+func (b *Bitcard) Set(index int) {
+	b.c.Add(index)
+}
+
+func (b *Bitcard) Unset(index int) {
+	b.c.Delete(index)
+}
+
+// draw random bitcard
+func (b *Bitcard) DrawRandom() int {
+	size := b.c.Size() - 1
 	// TODO improve this
-	count := 1+rand.Intn(size)
+	count := 1 + rand.Intn(size)
 	var index int = 0
-	for i:=0; i<count; i++ {
-		index = bFrom.c.Next(index)
+	for i := 0; i < count; i++ {
+		index = b.c.Next(index)
 	}
-	bFrom.c.Delete(index)
-	bTo.c.Add(index)
+	b.c.Delete(index)
+	return index
 }
