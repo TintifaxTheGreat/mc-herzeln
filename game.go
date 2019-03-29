@@ -1,15 +1,18 @@
 package main
 
 import (
+	"github.com/yourbasic/bit"
 	"math/rand"
 	"strconv"
 	"time"
 )
 
 type Game struct {
-	players      [PLAYERS]AgentPlayer
-	cardpool     *Pool
+	players   [PLAYERS]AgentPlayer
+	cardpool  *Pool
 }
+
+var ALLCOLORS [COLORS]*bit.Set
 
 func NewGame() *Game {
 	rand.Seed(time.Now().UnixNano())
@@ -26,6 +29,7 @@ func NewGame() *Game {
 	g.players[3] = NewAgentRandom(g.cardpool)
 
 	// TODO create helpers
+	ALLCOLORS = allcolors()
 
 	// TODO add the agents stuff here
 
@@ -65,20 +69,19 @@ func (g *Game) Play() {
 		// pass
 
 		for i := 1; i < PLAYERS; i++ {
-			play := g.players[currentPlayer].Pass()
+			//play := g.players[currentPlayer].Pass()
 
 			// TODO Change this later
 			//if followed_suit and play[1] < highest[1]:
-			if
+			//if
 
 			/*
-			                    play, followed_suit = self.myAgent[cur_player](cur_player, False, lead_play)
+			   play, followed_suit = self.myAgent[cur_player](cur_player, False, lead_play)
 
-			                    # the highest card is the one with the smallest(!) index
-			                    if followed_suit and play[1] < highest[1]:
-			                        highest = cur_player, play[1]
-			 */
-
+			   # the highest card is the one with the smallest(!) index
+			   if followed_suit and play[1] < highest[1]:
+			       highest = cur_player, play[1]
+			*/
 
 		}
 

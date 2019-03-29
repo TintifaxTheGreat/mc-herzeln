@@ -3,10 +3,10 @@ package main
 type AgentHuman Agent
 
 func NewAgentHuman(p *Pool) *AgentHuman{
-	a := new(AgentHuman)
-	a.pool = p
-	a.cards = NewPlayersCards()
-	return a
+	return &AgentHuman{
+		pool:  p,
+		cards: NewPlayersCards(),
+	}
 }
 
 func (a *AgentHuman) Lead() int {

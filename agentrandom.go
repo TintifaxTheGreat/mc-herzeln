@@ -3,10 +3,10 @@ package main
 type AgentRandom Agent
 
 func NewAgentRandom(p *Pool) *AgentRandom {
-	a := new(AgentRandom)
-	a.pool = p
-	a.cards = NewPlayersCards()
-	return a
+	return &AgentRandom{
+		pool:  p,
+		cards: NewPlayersCards(),
+	}
 }
 
 func (a *AgentRandom) Lead() int {

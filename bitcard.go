@@ -66,3 +66,15 @@ func (b *Bitcard) DrawRandom() int {
 	b.c.Delete(index)
 	return index
 }
+
+// given a lead card, calculate all cards legal to pass
+func(b* Bitcard) LegalCards(leadCard int, followSuit bool) *Bitcard {
+	color := int(leadCard / COLORS)
+	check := *b.c.And(ALLCOLORS[color])
+	if check.Size() == 0 {
+		return b
+	}
+	legalCards := NewBitcard(false)
+	legalCards.c = check
+	return legalCards
+}
