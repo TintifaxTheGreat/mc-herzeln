@@ -8,8 +8,8 @@ import (
 )
 
 type Game struct {
-	players   [PLAYERS]AgentPlayer
-	cardpool  *Pool
+	players  [PLAYERS]AgentPlayer
+	cardpool *Pool
 }
 
 var ALLCOLORS [COLORS]*bit.Set
@@ -60,31 +60,29 @@ func (g *Game) Play() {
 		var currentPlayer = leadPlayer
 		highest := CardValue{-1, -999}
 
+		info("Ausspiel Spieler " + strconv.Itoa(1 + currentPlayer))
+
 		// lead
-		play := g.players[currentPlayer].Lead()
-		//leadPlay := play
-		highest.player = currentPlayer
-		highest.value = value(play)
+		lead := g.players[currentPlayer].Lead()
+		highest = CardValue{currentPlayer, value(lead)}
+		g.cardpool.notDropped.Unset(lead)
+		g.cardpool.onTable.Set(lead)
 
 		// pass
-
 		for i := 1; i < PLAYERS; i++ {
-			//play := g.players[currentPlayer].Pass()
+			pass, followedSuit := g.players[currentPlayer].Pass(lead)
 
-			// TODO Change this later
-			//if followed_suit and play[1] < highest[1]:
-			//if
-
-			/*
-			   play, followed_suit = self.myAgent[cur_player](cur_player, False, lead_play)
-
-			   # the highest card is the one with the smallest(!) index
-			   if followed_suit and play[1] < highest[1]:
-			       highest = cur_player, play[1]
-			*/
-
+			if followedSuit && (value(lead) < highest.value) {
+				highest = CardValue{currentPlayer, value(pass)}
+			}
+			g.cardpool.notDropped.Unset(lead)
+			g.cardpool.onTable.Set(lead)
 		}
+		g.players[highest.player].Card().tricks.c.Or(&g.cardpool.onTable.c)
+		g.cardpool.onTable = *NewBitcard(true) // TODO ???
 
+		leadPlayer = highest.player
+		info("Trick won by player " + strconv.Itoa(1+ leadPlayer))
 	}
 }
 

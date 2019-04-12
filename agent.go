@@ -8,6 +8,6 @@ type Agent struct {
 
 type AgentPlayer interface {
 	Lead() int
-	Pass() int
+	Pass(lead int) (int, bool)
 	Card() *PlayersCards
 }

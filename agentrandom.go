@@ -13,8 +13,9 @@ func (a *AgentRandom) Lead() int {
 	return a.cards.hand.DrawRandom()
 }
 
-func (a *AgentRandom) Pass() int {
-	return 7
+func (a *AgentRandom) Pass(lead int) (int, bool) {
+	legalCards, followedSuit := a.cards.hand.LegalCards(lead, true)
+	return legalCards.DrawRandom(), followedSuit
 }
 
 func (a *AgentRandom) Card() *PlayersCards {

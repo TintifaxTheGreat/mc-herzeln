@@ -58,6 +58,9 @@ func (b *Bitcard) Unset(index int) {
 func (b *Bitcard) DrawRandom() int {
 	size := b.c.Size() - 1
 	// TODO improve this
+	if size == 0 {
+		return 0
+	}
 	count := 1 + rand.Intn(size)
 	var index int = 0
 	for i := 0; i < count; i++ {
@@ -68,13 +71,13 @@ func (b *Bitcard) DrawRandom() int {
 }
 
 // given a lead card, calculate all cards legal to pass
-func(b* Bitcard) LegalCards(leadCard int, followSuit bool) *Bitcard {
+func(b* Bitcard) LegalCards(leadCard int, followSuit bool) (*Bitcard, bool) {
 	color := int(leadCard / COLORS)
 	check := *b.c.And(ALLCOLORS[color])
 	if check.Size() == 0 {
-		return b
+		return b, true
 	}
 	legalCards := NewBitcard(false)
 	legalCards.c = check
-	return legalCards
+	return legalCards, false
 }
