@@ -9,6 +9,12 @@ func info(s string) {
 	fmt.Println(s)
 }
 
+/*
+func card2string(index int) string {
+	return CARDSTRINGS[index]
+}
+*/
+
 func value(index int) int {
 	return index % FIGURES
 }
