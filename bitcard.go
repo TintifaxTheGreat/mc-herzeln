@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/yourbasic/bit"
+	"math/bits"
 	"math/rand"
 )
 
@@ -14,70 +14,74 @@ var CARDSTRINGS = [COLORS * FIGURES]string{
 
 type CardValue struct {
 	player int
-	value int
+	value  int
 }
 
-type Bitcard struct {
-	c bit.Set
-}
+type Bitmap uint64
 
-func NewBitcard(set bool) *Bitcard {
-	b := new(Bitcard)
-	if set {
-		bitset := new(bit.Set).AddRange(0, 1+COLORS*FIGURES)
-		b.c = *bitset
-	}
-	return b
-}
-
-func (b *Bitcard) ToString() string {
-	var s string = ""
-	var thisItem int = 0
-	var nextItem int
-	for {
-		nextItem = b.c.Next(thisItem)
-		if -1 == nextItem {
-			break
+func (b *Bitmap) ToString() string {
+	s := ""
+	c := Bitmap(1)
+	for i := 0; i < 64; i++ {
+		if *b&c != 0 {
+			s += CARDSTRINGS[i] + " "
 		}
-		s += CARDSTRINGS[nextItem-1] + " "
-		thisItem = nextItem
-
+		c = c << 1
 	}
 	return s
 }
 
-func (b *Bitcard) Set(index int) {
-	b.c.Add(index)
+func (b *Bitmap) Set(index uint64) {
+	var i Bitmap = 1 << index
+	*b = *b | i
 }
 
-func (b *Bitcard) Unset(index int) {
-	b.c.Delete(index)
+func (b *Bitmap) Unset(index uint64) {
+	var i Bitmap = 1 << index
+	*b = *b ^ i
+}
+
+// find next set bit from given position
+func (b *Bitmap) Next(pos uint64) uint64 {
+	pos++
+	ret := uint64(0)
+	c := Bitmap(1)
+	c = c << pos
+	for i := pos; i < 64; i++ {
+		if *b&c != 0 {
+			ret = i
+			break
+		}
+		c = c << 1
+	}
+	return ret
 }
 
 // draw random bitcard
-func (b *Bitcard) DrawRandom() int {
-	size := b.c.Size() - 1
-	// TODO improve this
+func (b *Bitmap) DrawRandom() uint64 {
+	size := bits.OnesCount64(uint64(*b))
 	if size == 0 {
 		return 0
 	}
 	count := 1 + rand.Intn(size)
-	var index int = 0
+	index := uint64(0)
 	for i := 0; i < count; i++ {
-		index = b.c.Next(index)
+		index = b.Next(index)
 	}
-	b.c.Delete(index)
+	b.Unset(index)
 	return index
 }
 
 // given a lead card, calculate all cards legal to pass
-func(b* Bitcard) LegalCards(leadCard int, followSuit bool) (*Bitcard, bool) {
+func (b *Bitmap) LegalCards(leadCard int, followSuit bool) (*Bitmap, bool) {
 	color := int(leadCard / COLORS)
-	check := *b.c.And(ALLCOLORS[color])
-	if check.Size() == 0 {
+	check := *b & ALLCOLORS[color]
+	size := bits.OnesCount64(uint64(check))
+	if size == 0 {
 		return b, false
 	}
 	legalCards := NewBitcard(false)
-	legalCards.c = check
+	legalCards = check
 	return legalCards, true
 }
+*/

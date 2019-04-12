@@ -1,3 +1,4 @@
+/*
 package main
 
 type Pool struct {
@@ -13,3 +14,4 @@ func NewCardpool() *Pool {
 		dropped:    *NewBitcard(false),
 	}
 }
+*/
