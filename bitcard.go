@@ -13,11 +13,20 @@ var CARDSTRINGS = [COLORS * FIGURES]string{
 }
 
 type CardValue struct {
-	player int
-	value  int
+	player uint
+	value  uint
 }
 
 type Bitmap uint64
+
+func NewBitmap(set bool) *Bitmap {
+	b := new(Bitmap)
+	if set {
+		newBitmap := Bitmap(1<<uint64(COLORS*FIGURES) - 1)
+		return &newBitmap
+	}
+	return b
+}
 
 func (b *Bitmap) ToString() string {
 	s := ""
@@ -31,20 +40,20 @@ func (b *Bitmap) ToString() string {
 	return s
 }
 
-func (b *Bitmap) Set(index uint64) {
+func (b *Bitmap) Set(index uint) {
 	var i Bitmap = 1 << index
 	*b = *b | i
 }
 
-func (b *Bitmap) Unset(index uint64) {
+func (b *Bitmap) Unset(index uint) {
 	var i Bitmap = 1 << index
-	*b = *b ^ i
+	*b = *b ^ i // FIXME
 }
 
 // find next set bit from given position
-func (b *Bitmap) Next(pos uint64) uint64 {
+func (b *Bitmap) Next(pos uint) uint {
 	pos++
-	ret := uint64(0)
+	ret := uint(0)
 	c := Bitmap(1)
 	c = c << pos
 	for i := pos; i < 64; i++ {
@@ -58,30 +67,26 @@ func (b *Bitmap) Next(pos uint64) uint64 {
 }
 
 // draw random bitcard
-func (b *Bitmap) DrawRandom() uint64 {
+func (b *Bitmap) DrawRandom() uint {
 	size := bits.OnesCount64(uint64(*b))
 	if size == 0 {
 		return 0
 	}
 	count := 1 + rand.Intn(size)
-	index := uint64(0)
+	index := uint(0)
 	for i := 0; i < count; i++ {
 		index = b.Next(index)
 	}
-	b.Unset(index)
 	return index
 }
 
 // given a lead card, calculate all cards legal to pass
-func (b *Bitmap) LegalCards(leadCard int, followSuit bool) (*Bitmap, bool) {
-	color := int(leadCard / COLORS)
-	check := *b & ALLCOLORS[color]
-	size := bits.OnesCount64(uint64(check))
+func (b *Bitmap) LegalCards(leadCard uint, followSuit bool) (*Bitmap, bool) {
+	color := uint(leadCard / FIGURES)
+	legalCards := *b & ALLCOLORS[color]
+	size := bits.OnesCount64(uint64(legalCards))
 	if size == 0 {
 		return b, false
 	}
-	legalCards := NewBitcard(false)
-	legalCards = check
-	return legalCards, true
+	return &legalCards, true
 }
-*/

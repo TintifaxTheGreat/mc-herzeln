@@ -1,17 +1,15 @@
-/*
 package main
 
 type Pool struct {
-	notDropped Bitcard
-	onTable    Bitcard
-	dropped    Bitcard
+	notDropped *Bitmap
+	onTable    *Bitmap
+	dropped    *Bitmap
 }
 
 func NewCardpool() *Pool {
 	return &Pool{
-		notDropped: *NewBitcard(true),
-		onTable:    *NewBitcard(false),
-		dropped:    *NewBitcard(false),
+		notDropped: NewBitmap(true),
+		onTable:    NewBitmap(false),
+		dropped:    NewBitmap(false),
 	}
 }
-*/

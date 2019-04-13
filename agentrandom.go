@@ -9,11 +9,11 @@ func NewAgentRandom(p *Pool) *AgentRandom {
 	}
 }
 
-func (a *AgentRandom) Lead() int {
+func (a *AgentRandom) Lead() uint {
 	return a.cards.hand.DrawRandom()
 }
 
-func (a *AgentRandom) Pass(lead int) (int, bool) {
+func (a *AgentRandom) Pass(lead uint) (uint, bool) {
 	legalCards, followedSuit := a.cards.hand.LegalCards(lead, true)
 	return legalCards.DrawRandom(), followedSuit
 }

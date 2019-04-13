@@ -1,14 +1,14 @@
 package main
 
 type PlayersCards struct {
-	hand   Bitcard
-	tricks Bitcard
+	hand   *Bitmap
+	tricks *Bitmap
 }
 
 func NewPlayersCards() *PlayersCards {
 	p := new(PlayersCards)
-	p.hand = *NewBitcard(false)
-	p.tricks = *NewBitcard(false)
+	p.hand = NewBitmap(false)
+	p.tricks = NewBitmap(false)
 	return p
 }
 

@@ -1,8 +1,14 @@
 package main
 
-import (
-	"testing"
-)
+import "testing"
+
+func TestNewBitmap(t *testing.T) {
+	b := NewBitmap(true)
+	expected := Bitmap(4294967295)
+	if *b != expected {
+		t.Errorf("TestToString was incorrect, got: %s, want: %s.", b.ToString(), expected.ToString())
+	}
+}
 
 func TestToString(t *testing.T) {
 	b := Bitmap(1998)
@@ -36,7 +42,7 @@ func TestUnset(t *testing.T) {
 func TestNext(t *testing.T) {
 	b := Bitmap(130)
 	result := b.Next(1)
-	expected := uint64(7)
+	expected := uint(7)
 	if result != expected {
 		t.Errorf("TestNext was incorrect, got: %d, want: %d.", result, expected)
 	}

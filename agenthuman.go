@@ -9,11 +9,11 @@ func NewAgentHuman(p *Pool) *AgentHuman{
 	}
 }
 
-func (a *AgentHuman) Lead() int {
+func (a *AgentHuman) Lead() uint {
 	return 7
 }
 
-func (a *AgentHuman) Pass(lead int) (int, bool) {
+func (a *AgentHuman) Pass(lead uint) (uint, bool) {
 	return 7, false
 }
 

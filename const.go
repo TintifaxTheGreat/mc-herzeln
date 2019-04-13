@@ -1,8 +1,8 @@
 package main
 
 const (
-	PLAYERS int = 4
-	COLORS  int = 4
-	FIGURES int = 8
-	INHAND  int = 8
+	PLAYERS uint = 4
+	COLORS  uint = 4
+	FIGURES uint = 8
+	INHAND  uint = 8
 )

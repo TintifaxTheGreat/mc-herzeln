@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/yourbasic/bit"
 	"math/rand"
 	"strconv"
 	"time"
@@ -12,7 +11,7 @@ type Game struct {
 	cardpool *Pool
 }
 
-var ALLCOLORS [COLORS]*bit.Set
+var ALLCOLORS [COLORS]Bitmap
 
 func NewGame() *Game {
 	rand.Seed(time.Now().UnixNano())
@@ -41,9 +40,9 @@ func (g *Game) Start() {
 }
 
 func (g *Game) dealCards() {
-	var index int
-	for player := 0; player < PLAYERS; player++ {
-		for i := 0; i < INHAND; i++ {
+	var index uint
+	for player := uint(0); player < PLAYERS; player++ {
+		for i := uint(0); i < INHAND; i++ {
 			index = g.cardpool.notDropped.DrawRandom()
 			g.cardpool.notDropped.Unset(index)
 			g.players[player].Card().hand.Set(index)
@@ -52,23 +51,22 @@ func (g *Game) dealCards() {
 }
 
 func (g *Game) Play() {
-	var leadPlayer int = 0
-	//for trick := 0; trick < INHAND; trick++ {
-	for trick := 0; trick < 1; trick++ {
-		info("Stich " + strconv.Itoa(trick+1))
+	leadPlayer := uint(0)
+	for trick := uint(0); trick < INHAND; trick++ {
+		info("Stich " + strconv.Itoa(int(1+trick)))
 
 		var currentPlayer = leadPlayer
-		var play, lead int
-		highest := CardValue{-1, -999}
+		var play, lead uint
+		highest := CardValue{0, 0}
 		var followedSuit bool
 
-		info("Ausspiel Spieler " + strconv.Itoa(1 + currentPlayer))
+		info("Ausspiel Spieler " + strconv.Itoa(int(1+ currentPlayer)))
 
-		for i := 0; i < PLAYERS; i++ {
+		for i := uint(0); i < PLAYERS; i++ {
 			info(g.players[i].Card().Show(i == leadPlayer))
 		}
 
-		for i := 0; i < PLAYERS; i++ {
+		for i := uint(0); i < PLAYERS; i++ {
 
 			if i == 0 {
 				// lead
@@ -79,21 +77,26 @@ func (g *Game) Play() {
 				// pass
 				play, followedSuit = g.players[currentPlayer].Pass(lead)
 
-				if followedSuit && (value(lead) < highest.value) {
+				if followedSuit && (value(play) < highest.value) {
 					highest = CardValue{currentPlayer, value(play)}
 				}
 			}
 			g.players[currentPlayer].Card().hand.Unset(play)
 			g.cardpool.onTable.Set(play)
 			info(g.cardpool.onTable.ToString())
+
+			currentPlayer += 1
+			if currentPlayer == PLAYERS {
+				currentPlayer = 0
+			}
 		}
 
-		g.players[highest.player].Card().tricks.c.Or(&g.cardpool.onTable.c)
-		g.cardpool.dropped.c.Or(&g.cardpool.onTable.c)
-		//g.cardpool.onTable = *NewBitcard(true) // TODO ???
+		*g.players[highest.player].Card().tricks |= *g.cardpool.onTable
+		*g.cardpool.dropped |= *g.cardpool.onTable
+		*g.cardpool.onTable = 0
 
 		leadPlayer = highest.player
-		info("Trick won by player " + strconv.Itoa(1+ leadPlayer))
+		info("Trick won by player " + strconv.Itoa(int(1+leadPlayer)))
 	}
 }
 
