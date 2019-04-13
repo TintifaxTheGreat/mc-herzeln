@@ -21,8 +21,8 @@ func NewGame() *Game {
 	g.cardpool = NewCardpool()
 
 	// TODO change this
-	//g.players[0] = NewAgentHuman(g.cardpool)
-	g.players[0] = NewAgentRandom(g.cardpool)
+	g.players[0] = NewAgentHuman(g.cardpool)
+	//g.players[0] = NewAgentRandom(g.cardpool)
 	g.players[1] = NewAgentRandom(g.cardpool)
 	g.players[2] = NewAgentRandom(g.cardpool)
 	g.players[3] = NewAgentRandom(g.cardpool)

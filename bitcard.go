@@ -50,6 +50,14 @@ func (b *Bitmap) Unset(index uint) {
 	*b = *b ^ i // FIXME
 }
 
+// true if bit at index is set
+func (b *Bitmap) IsSet(index uint) bool {
+	c := Bitmap(0)
+	c.Set(index)
+	result := c & *b
+	return 1 == bits.OnesCount64(uint64(result))
+}
+
 // find next set bit from given position
 func (b *Bitmap) Next(pos uint) uint {
 	pos++
