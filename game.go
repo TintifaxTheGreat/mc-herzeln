@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math/bits"
 	"math/rand"
 	"strconv"
 	"time"
@@ -12,31 +13,30 @@ type Game struct {
 }
 
 var ALLCOLORS [COLORS]Bitmap
+var CARDSTRINGS [COLORS * FIGURES]string
 
 func NewGame() *Game {
-	rand.Seed(time.Now().UnixNano())
 	g := new(Game)
 
 	// create the cardpool
 	g.cardpool = NewCardpool()
 
 	// TODO change this
-	g.players[0] = NewAgentHuman(g.cardpool)
-	//g.players[0] = NewAgentRandom(g.cardpool)
+	//g.players[0] = NewAgentHuman(g.cardpool)
+	g.players[0] = NewAgentRandom(g.cardpool)
 	g.players[1] = NewAgentRandom(g.cardpool)
 	g.players[2] = NewAgentRandom(g.cardpool)
 	g.players[3] = NewAgentRandom(g.cardpool)
-
-	// TODO create helpers
-	ALLCOLORS = allcolors()
-
-	// TODO add the agents stuff here
 
 	return g
 }
 
 func (g *Game) Start() {
 	g.dealCards()
+	g.Play()
+	//result := g.Outcome()
+	g.Outcome()
+	//fmt.Println(result)
 }
 
 func (g *Game) dealCards() {
@@ -60,7 +60,7 @@ func (g *Game) Play() {
 		highest := CardValue{0, 0}
 		var followedSuit bool
 
-		info("Ausspiel Spieler " + strconv.Itoa(int(1+ currentPlayer)))
+		info("Ausspiel Spieler " + strconv.Itoa(int(1+currentPlayer)))
 
 		for i := uint(0); i < PLAYERS; i++ {
 			info(g.players[i].Card().Show(i == leadPlayer))
@@ -100,10 +100,25 @@ func (g *Game) Play() {
 	}
 }
 
+func (g *Game) Outcome() [PLAYERS] int {
+	var points [PLAYERS] int
+	for player := uint(0); player < PLAYERS; player++ {
+		// count all hearts in the player's tricks
+		points[player] -= bits.OnesCount64(uint64(ALLCOLORS[0] & *g.players[player].Card().tricks))
+	}
+	return points
+}
+
 func main() {
-	for j := 0; j < 1; j++ {
+	rand.Seed(time.Now().UnixNano())
+
+	// create helpers
+	helper := new(Helper)
+	ALLCOLORS = helper.AllColors()
+	CARDSTRINGS = helper.Cardstrings()
+
+	for j := 0; j < 10000; j++ {
 		myGame := NewGame()
 		myGame.Start()
-		myGame.Play()
 	}
 }

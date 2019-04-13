@@ -5,13 +5,6 @@ import (
 	"math/rand"
 )
 
-var CARDSTRINGS = [COLORS * FIGURES]string{
-	"HA", "HK", "HO", "HU", "HX", "H9", "H8", "H7",
-	"SA", "SK", "SO", "SU", "SX", "S9", "S8", "S7",
-	"PA", "PK", "PO", "PU", "PX", "P9", "P8", "P7",
-	"EA", "EK", "EO", "EU", "EX", "E9", "E8", "E7",
-}
-
 type CardValue struct {
 	player uint
 	value  uint
@@ -31,7 +24,7 @@ func NewBitmap(set bool) *Bitmap {
 func (b *Bitmap) ToString() string {
 	s := ""
 	c := Bitmap(1)
-	for i := 0; i < 64; i++ {
+	for i := 0; i < BITMAP_SIZE; i++ {
 		if *b&c != 0 {
 			s += CARDSTRINGS[i] + " "
 		}
@@ -64,7 +57,7 @@ func (b *Bitmap) Next(pos uint) uint {
 	ret := uint(0)
 	c := Bitmap(1)
 	c = c << pos
-	for i := pos; i < 64; i++ {
+	for i := pos; i < BITMAP_SIZE; i++ {
 		if *b&c != 0 {
 			ret = i
 			break

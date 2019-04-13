@@ -1,6 +1,8 @@
 package main
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestNewBitmap(t *testing.T) {
 	b := NewBitmap(true)
@@ -11,6 +13,10 @@ func TestNewBitmap(t *testing.T) {
 }
 
 func TestToString(t *testing.T) {
+	// create helpers
+	helper := new(Helper)
+	CARDSTRINGS = helper.Cardstrings()
+
 	b := Bitmap(1998)
 	result := b.ToString()
 	expected := "HK HO HU H8 H7 SA SK SO "
