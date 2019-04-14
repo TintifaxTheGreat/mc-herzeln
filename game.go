@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math/bits"
 	"math/rand"
 	"strconv"
@@ -8,35 +9,25 @@ import (
 )
 
 type Game struct {
-	players  [PLAYERS]AgentPlayer
+	players  [PLAYERS] AgentPlayer
 	cardpool *Pool
 }
 
 var ALLCOLORS [COLORS]Bitmap
+var ALLFIGURES [FIGURES]Bitmap
 var CARDSTRINGS [COLORS * FIGURES]string
 
-func NewGame() *Game {
+func NewGame(pool *Pool, agents [PLAYERS] AgentPlayer) *Game {
 	g := new(Game)
-
-	// create the cardpool
-	g.cardpool = NewCardpool()
-
-	// TODO change this
-	//g.players[0] = NewAgentHuman(g.cardpool)
-	g.players[0] = NewAgentRandom(g.cardpool)
-	g.players[1] = NewAgentRandom(g.cardpool)
-	g.players[2] = NewAgentRandom(g.cardpool)
-	g.players[3] = NewAgentRandom(g.cardpool)
-
+	g.cardpool = pool
+	g.players = agents
 	return g
 }
 
-func (g *Game) Start() {
+func (g *Game) Play() [PLAYERS] int {
 	g.dealCards()
-	g.Play()
-	//result := g.Outcome()
-	g.Outcome()
-	//fmt.Println(result)
+	g.play()
+	return g.outcome()
 }
 
 func (g *Game) dealCards() {
@@ -50,8 +41,9 @@ func (g *Game) dealCards() {
 	}
 }
 
-func (g *Game) Play() {
+func (g *Game) play() {
 	leadPlayer := uint(0)
+	// TODO Fixme
 	for trick := uint(0); trick < INHAND; trick++ {
 		info("Stich " + strconv.Itoa(int(1+trick)))
 
@@ -100,7 +92,7 @@ func (g *Game) Play() {
 	}
 }
 
-func (g *Game) Outcome() [PLAYERS] int {
+func (g *Game) outcome() [PLAYERS] int {
 	var points [PLAYERS] int
 	for player := uint(0); player < PLAYERS; player++ {
 		// count all hearts in the player's tricks
@@ -110,15 +102,28 @@ func (g *Game) Outcome() [PLAYERS] int {
 }
 
 func main() {
-	rand.Seed(time.Now().UnixNano())
-
 	// create helpers
 	helper := new(Helper)
-	ALLCOLORS = helper.AllColors()
 	CARDSTRINGS = helper.Cardstrings()
+	ALLCOLORS = helper.AllColors()
+	ALLFIGURES = helper.AllFigures()
 
-	for j := 0; j < 10000; j++ {
-		myGame := NewGame()
-		myGame.Start()
+	rand.Seed(time.Now().UnixNano())
+
+	for j := 0; j < 1; j++ {
+		// create cardpool
+		cardpool := NewCardpool()
+
+		// create agents
+		agents := [PLAYERS] AgentPlayer{
+			NewAgentRandom(cardpool),
+			NewAgentRandom(cardpool),
+			NewAgentRandom(cardpool),
+			NewAgentRandom(cardpool),
+		}
+
+		myGame := NewGame(cardpool, agents)
+		result := myGame.Play()
+		fmt.Println(result)
 	}
 }

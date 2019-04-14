@@ -22,15 +22,13 @@ func NewBitmap(set bool) *Bitmap {
 }
 
 func (b *Bitmap) ToString() string {
-	s := ""
-	c := Bitmap(1)
-	for i := 0; i < BITMAP_SIZE; i++ {
-		if *b&c != 0 {
-			s += CARDSTRINGS[i] + " "
+	result := ""
+	for index := uint(0); index < BITMAP_SIZE; index++ {
+		if b.IsSet(index) {
+			result += CARDSTRINGS[index] + " "
 		}
-		c = c << 1
 	}
-	return s
+	return result
 }
 
 func (b *Bitmap) Set(index uint) {

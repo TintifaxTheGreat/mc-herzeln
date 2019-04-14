@@ -13,3 +13,12 @@ func NewCardpool() *Pool {
 		dropped:    NewBitmap(false),
 	}
 }
+
+func (p *Pool) copy() *Pool {
+	notDropped, onTable, dropped := *p.notDropped, *p.onTable, *p.dropped
+	return &Pool{
+		notDropped: &notDropped,
+		onTable:    &onTable,
+		dropped:    &dropped,
+	}
+}

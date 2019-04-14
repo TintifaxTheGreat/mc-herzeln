@@ -1,7 +1,11 @@
 package main
 
+import "fmt"
+
 func info(s string) {
-	//fmt.Println(s)
+	if INFO {
+		fmt.Println(s)
+	}
 }
 
 func IndexOfCard(s string) (uint, bool) {
@@ -35,11 +39,21 @@ func (h *Helper) AllColors() [COLORS] Bitmap {
 	return res
 }
 
+func (h *Helper) AllFigures() [FIGURES] Bitmap {
+	var res = [FIGURES] Bitmap{}
+	for figure := uint(0); figure < FIGURES; figure++ {
+		for color := uint(0); color < COLORS; color++ {
+			res[figure].Set(color*FIGURES + figure)
+		}
+	}
+	return res
+}
+
 func (h *Helper) Cardstrings() [COLORS * FIGURES]string {
 	var result [COLORS * FIGURES] string
 	for color := uint(0); color < COLORS; color++ {
 		for figure := uint(0); figure < FIGURES; figure++ {
-			result[color*FIGURES+figure] = string(COLOR_CHARS[color])+string(FIGURE_CHARS[figure])
+			result[color*FIGURES+figure] = string(COLOR_CHARS[color]) + string(FIGURE_CHARS[figure])
 		}
 	}
 	return result

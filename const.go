@@ -1,6 +1,8 @@
 package main
 
 const (
+	INFO = true
+
 	BITMAP_SIZE = 64
 
 	PLAYERS uint = 4

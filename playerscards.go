@@ -12,6 +12,14 @@ func NewPlayersCards() *PlayersCards {
 	return p
 }
 
+func (p *PlayersCards) copy() *PlayersCards {
+	hand, tricks := *p.hand, *p.tricks
+	return &PlayersCards{
+		hand: &hand,
+		tricks: &tricks,
+	}
+}
+
 func (p *PlayersCards) Show(leadplayer bool) string {
 	var s string = ""
 	s += p.hand.ToString() + "[" +
