@@ -1,17 +1,20 @@
 package main
 
+// a player's hand, and tricks
 type PlayersCards struct {
-	hand   *Bitmap
-	tricks *Bitmap
+	hand   *bitmap
+	tricks *bitmap
 }
 
+// factory for PlayersCards
 func NewPlayersCards() *PlayersCards {
-	p := new(PlayersCards)
-	p.hand = NewBitmap(false)
-	p.tricks = NewBitmap(false)
+	p := &PlayersCards{}
+	p.hand = newBitmap(false)
+	p.tricks = newBitmap(false)
 	return p
 }
 
+// deep copy
 func (p *PlayersCards) copy() *PlayersCards {
 	hand, tricks := *p.hand, *p.tricks
 	return &PlayersCards{
@@ -20,10 +23,11 @@ func (p *PlayersCards) copy() *PlayersCards {
 	}
 }
 
+// string representation of a player's hand, and tricks
 func (p *PlayersCards) Show(leadplayer bool) string {
 	var s string = ""
-	s += p.hand.ToString() + "[" +
-		p.tricks.ToString() + "]"
+	s += p.hand.toString() + "[" +
+		p.tricks.toString() + "]"
 	if leadplayer == true {
 		s += "*"
 	}

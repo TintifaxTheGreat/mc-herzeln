@@ -11,17 +11,19 @@ import (
 type Game struct {
 	players  [PLAYERS] AgentPlayer
 	cardpool *Pool
+	state    *Gamestate
 }
 
-var ALLCOLORS [COLORS]Bitmap
-var ALLFIGURES [FIGURES]Bitmap
+var ALLCOLORS [COLORS]bitmap
+var ALLFIGURES [FIGURES]bitmap
 var CARDSTRINGS [COLORS * FIGURES]string
 
 func NewGame(pool *Pool, agents [PLAYERS] AgentPlayer) *Game {
-	g := new(Game)
-	g.cardpool = pool
-	g.players = agents
-	return g
+	return &Game{
+		cardpool: pool,
+		players:  agents,
+		state:    &Gamestate{},
+	}
 }
 
 func (g *Game) Play() [PLAYERS] int {
@@ -31,55 +33,55 @@ func (g *Game) Play() [PLAYERS] int {
 }
 
 func (g *Game) dealCards() {
+	info(g.cardpool.notDropped.toString())
 	var index uint
 	for player := uint(0); player < PLAYERS; player++ {
 		for i := uint(0); i < INHAND; i++ {
-			index = g.cardpool.notDropped.DrawRandom()
-			g.cardpool.notDropped.Unset(index)
-			g.players[player].Card().hand.Set(index)
+			index = g.cardpool.notDropped.drawRandom()
+			g.cardpool.notDropped.unset(index)
+			g.players[player].Card().hand.set(index)
 		}
 	}
 }
 
 func (g *Game) play() {
-	leadPlayer := uint(0)
 	// TODO Fixme
-	for trick := uint(0); trick < INHAND; trick++ {
-		info("Stich " + strconv.Itoa(int(1+trick)))
+	for ; g.state.tricksCount < INHAND; {
+		info("Stich " + strconv.Itoa(int(1+g.state.tricksCount)))
 
-		var currentPlayer = leadPlayer
+		g.state.currentPlayer = g.state.leadPlayer
 		var play, lead uint
 		highest := CardValue{0, 0}
 		var followedSuit bool
 
-		info("Ausspiel Spieler " + strconv.Itoa(int(1+currentPlayer)))
+		info("Ausspiel Spieler " + strconv.Itoa(int(1+g.state.currentPlayer)))
 
 		for i := uint(0); i < PLAYERS; i++ {
-			info(g.players[i].Card().Show(i == leadPlayer))
+			info(g.players[i].Card().Show(i == g.state.leadPlayer))
 		}
 
 		for i := uint(0); i < PLAYERS; i++ {
 
 			if i == 0 {
 				// lead
-				lead = g.players[currentPlayer].Lead()
+				lead = g.players[g.state.currentPlayer].Lead()
 				play = lead
-				highest = CardValue{currentPlayer, value(lead)}
+				highest = CardValue{g.state.currentPlayer, value(lead)}
 			} else {
 				// pass
-				play, followedSuit = g.players[currentPlayer].Pass(lead)
+				play, followedSuit = g.players[g.state.currentPlayer].Pass(lead)
 
 				if followedSuit && (value(play) < highest.value) {
-					highest = CardValue{currentPlayer, value(play)}
+					highest = CardValue{g.state.currentPlayer, value(play)}
 				}
 			}
-			g.players[currentPlayer].Card().hand.Unset(play)
-			g.cardpool.onTable.Set(play)
-			info(g.cardpool.onTable.ToString())
+			g.players[g.state.currentPlayer].Card().hand.unset(play)
+			g.cardpool.onTable.set(play)
+			info(g.cardpool.onTable.toString())
 
-			currentPlayer += 1
-			if currentPlayer == PLAYERS {
-				currentPlayer = 0
+			g.state.currentPlayer += 1
+			if g.state.currentPlayer == PLAYERS {
+				g.state.currentPlayer = 0
 			}
 		}
 
@@ -87,8 +89,9 @@ func (g *Game) play() {
 		*g.cardpool.dropped |= *g.cardpool.onTable
 		*g.cardpool.onTable = 0
 
-		leadPlayer = highest.player
-		info("Trick won by player " + strconv.Itoa(int(1+leadPlayer)))
+		g.state.tricksCount++
+		g.state.leadPlayer = highest.player
+		info("Trick won by player " + strconv.Itoa(int(1+g.state.leadPlayer)))
 	}
 }
 
@@ -101,18 +104,23 @@ func (g *Game) outcome() [PLAYERS] int {
 	return points
 }
 
-func main() {
+func init() {
 	// create helpers
 	helper := new(Helper)
 	CARDSTRINGS = helper.Cardstrings()
 	ALLCOLORS = helper.AllColors()
 	ALLFIGURES = helper.AllFigures()
 
+	// misc
 	rand.Seed(time.Now().UnixNano())
+}
+
+func main() {
 
 	for j := 0; j < 1; j++ {
 		// create cardpool
 		cardpool := NewCardpool()
+		//gamestate := &Gamestate{}
 
 		// create agents
 		agents := [PLAYERS] AgentPlayer{

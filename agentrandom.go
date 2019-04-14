@@ -10,12 +10,12 @@ func NewAgentRandom(p *Pool) *AgentRandom {
 }
 
 func (a *AgentRandom) Lead() uint {
-	return a.cards.hand.DrawRandom()
+	return a.cards.hand.drawRandom()
 }
 
 func (a *AgentRandom) Pass(lead uint) (uint, bool) {
-	legalCards, followedSuit := a.cards.hand.LegalCards(lead, true)
-	return legalCards.DrawRandom(), followedSuit
+	legalCards, followedSuit := a.cards.hand.legalCards(lead, true)
+	return legalCards.drawRandom(), followedSuit
 }
 
 func (a *AgentRandom) Card() *PlayersCards {

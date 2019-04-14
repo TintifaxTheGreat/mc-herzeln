@@ -16,13 +16,13 @@ func (a *AgentHuman) Lead() uint {
 }
 
 func (a *AgentHuman) Pass(lead uint) (uint, bool) {
-	legalCards, followedSuit := a.cards.hand.LegalCards(lead, true)
+	legalCards, followedSuit := a.cards.hand.legalCards(lead, true)
 	fmt.Print("--->LEGAL ")
-	info(legalCards.ToString())
+	info(legalCards.toString())
 	index := uint(0)
 	for {
 		index = a.readInput()
-		if legalCards.IsSet(index) {
+		if legalCards.isSet(index) {
 			return index, followedSuit
 		}
 	}

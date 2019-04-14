@@ -16,14 +16,14 @@ func NewAgentMonteCarlo(p *Pool) *AgentMonteCarlo {
 func (a *AgentMonteCarlo) Lead() uint {
 	countHand := bits.OnesCount64(uint64(*a.cards.hand))
 	if countHand == 1 {
-		return a.cards.hand.Next(0)
+		return a.cards.hand.next(0)
 	}
 	//tPool := &Pool{}
 	//tCards := &PlayersCards{}
 	index := uint(0)
 	for i := uint(0); i < 1; i++ {
 		for i := 0; i < countHand; i++ {
-			index = a.cards.hand.Next(index)
+			index = a.cards.hand.next(index)
 			//tPool = a.pool.copy()
 			//tCards = a.cards.copy()
 
@@ -38,8 +38,8 @@ func (a *AgentMonteCarlo) Lead() uint {
 }
 
 func (a *AgentMonteCarlo) Pass(lead uint) (uint, bool) {
-	legalCards, followedSuit := a.cards.hand.LegalCards(lead, true)
-	return legalCards.DrawRandom(), followedSuit //TODO FIXME
+	legalCards, followedSuit := a.cards.hand.legalCards(lead, true)
+	return legalCards.drawRandom(), followedSuit //TODO FIXME
 }
 
 func (a *AgentMonteCarlo) Card() *PlayersCards {
