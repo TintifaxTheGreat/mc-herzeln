@@ -1,4 +1,4 @@
-package main
+package deal
 
 import "fmt"
 
@@ -62,7 +62,7 @@ func value(index uint) uint {
 	return index % FIGURES
 }
 
-func info(s string) {
+func Info(s string) {
 	if INFO {
 		fmt.Println(s)
 	}

@@ -1,7 +1,6 @@
-package main
+package deal
 
 import (
-	"fmt"
 	"math/bits"
 	"math/rand"
 	"strconv"
@@ -33,12 +32,12 @@ func (g *Deal) Play() [PLAYERS] int {
 }
 
 func (g *Deal) dealCards() {
-	info(g.cardpool.notDropped.toString())
+	Info(g.cardpool.NotDropped.ToString())
 	var index uint
 	for player := uint(0); player < PLAYERS; player++ {
 		for i := uint(0); i < INHAND; i++ {
-			index = g.cardpool.notDropped.drawRandom()
-			g.cardpool.notDropped.unset(index)
+			index = g.cardpool.NotDropped.drawRandom()
+			g.cardpool.NotDropped.unset(index)
 			g.players[player].Card().hand.set(index)
 		}
 	}
@@ -47,17 +46,17 @@ func (g *Deal) dealCards() {
 func (g *Deal) play() {
 	// TODO Fixme
 	for ; g.state.tricksCount < INHAND; {
-		info("Stich " + strconv.Itoa(int(1+g.state.tricksCount)))
+		Info("Stich " + strconv.Itoa(int(1+g.state.tricksCount)))
 
 		g.state.currentPlayer = g.state.leadPlayer
 		var play, lead uint
 		highest := CardValue{0, 0}
 		var followedSuit bool
 
-		info("Ausspiel Spieler " + strconv.Itoa(int(1+g.state.currentPlayer)))
+		Info("Ausspiel Spieler " + strconv.Itoa(int(1+g.state.currentPlayer)))
 
 		for i := uint(0); i < PLAYERS; i++ {
-			info(g.players[i].Card().Show(i == g.state.leadPlayer))
+			Info(g.players[i].Card().Show(i == g.state.leadPlayer))
 		}
 
 		for i := uint(0); i < PLAYERS; i++ {
@@ -76,8 +75,8 @@ func (g *Deal) play() {
 				}
 			}
 			g.players[g.state.currentPlayer].Card().hand.unset(play)
-			g.cardpool.onTable.set(play)
-			info(g.cardpool.onTable.toString())
+			g.cardpool.OnTable.set(play)
+			Info(g.cardpool.OnTable.ToString())
 
 			g.state.currentPlayer += 1
 			if g.state.currentPlayer == PLAYERS {
@@ -85,13 +84,13 @@ func (g *Deal) play() {
 			}
 		}
 
-		*g.players[highest.player].Card().tricks |= *g.cardpool.onTable
-		*g.cardpool.dropped |= *g.cardpool.onTable
-		*g.cardpool.onTable = 0
+		*g.players[highest.player].Card().tricks |= *g.cardpool.OnTable
+		*g.cardpool.Dropped |= *g.cardpool.OnTable
+		*g.cardpool.OnTable = 0
 
 		g.state.tricksCount++
 		g.state.leadPlayer = highest.player
-		info("Trick won by player " + strconv.Itoa(int(1+g.state.leadPlayer)))
+		Info("Trick won by player " + strconv.Itoa(int(1+g.state.leadPlayer)))
 	}
 }
 
@@ -115,23 +114,3 @@ func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
-func main() {
-
-	for j := 0; j < 1; j++ {
-		// create cardpool
-		cardpool := NewCardpool()
-		//gamestate := &Gamestate{}
-
-		// create agents
-		agents := [PLAYERS] AgentPlayer{
-			NewAgentRandom(cardpool),
-			NewAgentRandom(cardpool),
-			NewAgentRandom(cardpool),
-			NewAgentRandom(cardpool),
-		}
-
-		myGame := NewGame(cardpool, agents)
-		result := myGame.Play()
-		fmt.Println(result)
-	}
-}

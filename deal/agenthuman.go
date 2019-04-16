@@ -1,4 +1,4 @@
-package main
+package deal
 
 import "fmt"
 
@@ -18,7 +18,7 @@ func (a *AgentHuman) Lead() uint {
 func (a *AgentHuman) Pass(lead uint) (uint, bool) {
 	legalCards, followedSuit := a.cards.hand.legalCards(lead, true)
 	fmt.Print("--->LEGAL ")
-	info(legalCards.toString())
+	Info(legalCards.ToString())
 	index := uint(0)
 	for {
 		index = a.readInput()
@@ -38,7 +38,7 @@ func (a *AgentHuman) readInput() uint {
 		fmt.Print("IHRE EINGABE: ")
 		fmt.Scanln(&input)
 		index, found := IndexOfCard(input)
-		if found{
+		if found {
 			return index
 		}
 	}

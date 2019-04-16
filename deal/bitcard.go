@@ -1,4 +1,4 @@
-package main
+package deal
 
 import (
 	"math/bits"
@@ -79,7 +79,7 @@ func (b *bitmap) legalCards(leadCard uint, followSuit bool) (*bitmap, bool) {
 }
 
 // string representation of Bitmap
-func (b *bitmap) toString() string {
+func (b *bitmap) ToString() string {
 	result := ""
 	for index := uint(0); index < BITMAP_SIZE; index++ {
 		if b.isSet(index) {

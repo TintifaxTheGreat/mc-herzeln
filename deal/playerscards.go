@@ -1,4 +1,4 @@
-package main
+package deal
 
 // a player's hand, and tricks
 type PlayersCards struct {
@@ -26,8 +26,8 @@ func (p *PlayersCards) copy() *PlayersCards {
 // string representation of a player's hand, and tricks
 func (p *PlayersCards) Show(leadplayer bool) string {
 	var s string = ""
-	s += p.hand.toString() + "[" +
-		p.tricks.toString() + "]"
+	s += p.hand.ToString() + "[" +
+		p.tricks.ToString() + "]"
 	if leadplayer == true {
 		s += "*"
 	}

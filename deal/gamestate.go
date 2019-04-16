@@ -1,4 +1,4 @@
-package main
+package deal
 
 type Gamestate struct {
 	tricksCount uint

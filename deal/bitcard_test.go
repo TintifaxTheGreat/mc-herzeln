@@ -1,4 +1,4 @@
-package main
+package deal
 
 import (
 	"testing"
@@ -8,7 +8,7 @@ func TestNewBitmap(t *testing.T) {
 	b := newBitmap(true)
 	expected := bitmap(4294967295)
 	if *b != expected {
-		t.Errorf("TestToString was incorrect, got: %s, want: %s.", b.toString(), expected.toString())
+		t.Errorf("TestToString was incorrect, got: %s, want: %s.", b.ToString(), expected.ToString())
 	}
 }
 
@@ -18,7 +18,7 @@ func TestToString(t *testing.T) {
 	CARDSTRINGS = helper.Cardstrings()
 
 	b := bitmap(1998)
-	result := b.toString()
+	result := b.ToString()
 	expected := "HK HO HU H8 H7 SA SK SO "
 	if result != expected {
 		t.Errorf("TestToString was incorrect, got: %s, want: %s.", result, expected)

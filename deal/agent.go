@@ -1,4 +1,4 @@
-package main
+package deal
 
 // an agent (player)
 type Agent struct {
