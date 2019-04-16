@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-type Game struct {
+type Deal struct {
 	players  [PLAYERS] AgentPlayer
 	cardpool *Pool
 	state    *Gamestate
@@ -18,21 +18,21 @@ var ALLCOLORS [COLORS]bitmap
 var ALLFIGURES [FIGURES]bitmap
 var CARDSTRINGS [COLORS * FIGURES]string
 
-func NewGame(pool *Pool, agents [PLAYERS] AgentPlayer) *Game {
-	return &Game{
+func NewGame(pool *Pool, agents [PLAYERS] AgentPlayer) *Deal {
+	return &Deal{
 		cardpool: pool,
 		players:  agents,
 		state:    &Gamestate{},
 	}
 }
 
-func (g *Game) Play() [PLAYERS] int {
+func (g *Deal) Play() [PLAYERS] int {
 	g.dealCards()
 	g.play()
 	return g.outcome()
 }
 
-func (g *Game) dealCards() {
+func (g *Deal) dealCards() {
 	info(g.cardpool.notDropped.toString())
 	var index uint
 	for player := uint(0); player < PLAYERS; player++ {
@@ -44,7 +44,7 @@ func (g *Game) dealCards() {
 	}
 }
 
-func (g *Game) play() {
+func (g *Deal) play() {
 	// TODO Fixme
 	for ; g.state.tricksCount < INHAND; {
 		info("Stich " + strconv.Itoa(int(1+g.state.tricksCount)))
@@ -95,7 +95,7 @@ func (g *Game) play() {
 	}
 }
 
-func (g *Game) outcome() [PLAYERS] int {
+func (g *Deal) outcome() [PLAYERS] int {
 	var points [PLAYERS] int
 	for player := uint(0); player < PLAYERS; player++ {
 		// count all hearts in the player's tricks
