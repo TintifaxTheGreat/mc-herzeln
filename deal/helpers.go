@@ -40,11 +40,6 @@ func (h *Helper) Cardstrings() [COLORS * FIGURES]string {
 	return result
 }
 
-type CardValue struct {
-	player uint
-	value  uint
-}
-
 func IndexOfCard(s string) (uint, bool) {
 	found := false
 	index := uint(0)
@@ -56,10 +51,6 @@ func IndexOfCard(s string) (uint, bool) {
 		}
 	}
 	return index, found
-}
-
-func value(index uint) uint {
-	return index % FIGURES
 }
 
 func Info(s string) {

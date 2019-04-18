@@ -17,6 +17,7 @@ func NewPlayersCards() *PlayersCards {
 // deep copy
 func (p *PlayersCards) copy() *PlayersCards {
 	hand, tricks := *p.hand, *p.tricks
+
 	return &PlayersCards{
 		hand: &hand,
 		tricks: &tricks,

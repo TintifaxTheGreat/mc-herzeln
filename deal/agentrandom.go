@@ -2,7 +2,7 @@ package deal
 
 type AgentRandom Agent
 
-func NewAgentRandom(p *Pool) *AgentRandom {
+func NewAgentRandom() *AgentRandom {
 	return &AgentRandom{
 		cards: NewPlayersCards(),
 	}
@@ -19,5 +19,12 @@ func (a *AgentRandom) Pass(_ *Pool, _ *Gamestate, lead uint) (uint, bool) {
 
 func (a *AgentRandom) Card() *PlayersCards {
 	return a.cards
+}
+
+// deep copy
+func (a *AgentRandom) copy() *AgentRandom {
+	ar := NewAgentRandom()
+	ar.cards = a.cards.copy()
+	return ar
 }
 
