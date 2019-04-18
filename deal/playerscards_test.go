@@ -22,5 +22,16 @@ func TestCopy(t *testing.T) {
 	if *cards.tricks != *cardsCopy.tricks {
 		t.Errorf("TestCopy was incorrect, expected copy to be equal.")
 	}
+
+	cards.hand.set(16)
+	cards.tricks.set(59)
+
+	if *cards.hand == *cardsCopy.hand {
+		t.Errorf("TestCopy was incorrect, expected copy to be different.")
+	}
+
+	if *cards.tricks == *cardsCopy.tricks {
+		t.Errorf("TestCopy was incorrect, expected copy to be different.")
+	}
 }
 
