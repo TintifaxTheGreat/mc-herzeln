@@ -21,3 +21,12 @@ func (a *AgentRandom) Pass(lead uint) (uint, bool) {
 func (a *AgentRandom) Card() *PlayersCards {
 	return a.cards
 }
+
+func (a *AgentRandom) State() *Gamestate {
+	return a.state
+}
+
+func (a *AgentRandom) SetState(gamestate *Gamestate) {
+	a.state = gamestate
+}
+

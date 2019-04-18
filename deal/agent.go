@@ -2,7 +2,7 @@ package deal
 
 // an agent (player)
 type Agent struct {
-	state Gamestate
+	state *Gamestate
 	pool *Pool
 	cards *PlayersCards
 }
@@ -12,4 +12,8 @@ type AgentPlayer interface {
 	Lead() uint
 	Pass(lead uint) (uint, bool)
 	Card() *PlayersCards
+
+	// TODO remove these
+	State() *Gamestate
+	SetState(gamestate *Gamestate)
 }

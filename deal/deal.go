@@ -18,10 +18,14 @@ var ALLFIGURES [FIGURES]bitmap
 var CARDSTRINGS [COLORS * FIGURES]string
 
 func NewGame(pool *Pool, agents [PLAYERS] AgentPlayer) *Deal {
+	gamestate := &Gamestate{}
+	for player := uint(0); player < PLAYERS; player++ {
+		agents[player].SetState(gamestate)
+	}
 	return &Deal{
 		cardpool: pool,
 		players:  agents,
-		state:    &Gamestate{},
+		state:    gamestate,
 	}
 }
 

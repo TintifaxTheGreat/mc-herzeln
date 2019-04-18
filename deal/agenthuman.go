@@ -32,6 +32,14 @@ func (a *AgentHuman) Card() *PlayersCards {
 	return a.cards
 }
 
+func (a *AgentHuman) State() *Gamestate {
+	return a.state
+}
+
+func (a *AgentHuman) SetState(gamestate *Gamestate) {
+	a.state = gamestate
+}
+
 func (a *AgentHuman) readInput() uint {
 	var input string
 	for {
