@@ -6,16 +6,15 @@ type AgentHuman Agent
 
 func NewAgentHuman(p *Pool) *AgentHuman {
 	return &AgentHuman{
-		pool:  p,
 		cards: NewPlayersCards(),
 	}
 }
 
-func (a *AgentHuman) Lead() uint {
+func (a *AgentHuman) Lead(pool *Pool, state *Gamestate,) uint {
 	return a.readInput()
 }
 
-func (a *AgentHuman) Pass(lead uint) (uint, bool) {
+func (a *AgentHuman) Pass(pool *Pool, state *Gamestate, lead uint) (uint, bool) {
 	legalCards, followedSuit := a.cards.hand.legalCards(lead, true)
 	fmt.Print("--->LEGAL ")
 	Info(legalCards.ToString())
@@ -30,14 +29,6 @@ func (a *AgentHuman) Pass(lead uint) (uint, bool) {
 
 func (a *AgentHuman) Card() *PlayersCards {
 	return a.cards
-}
-
-func (a *AgentHuman) State() *Gamestate {
-	return a.state
-}
-
-func (a *AgentHuman) SetState(gamestate *Gamestate) {
-	a.state = gamestate
 }
 
 func (a *AgentHuman) readInput() uint {

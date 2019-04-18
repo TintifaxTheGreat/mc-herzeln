@@ -4,29 +4,20 @@ type AgentRandom Agent
 
 func NewAgentRandom(p *Pool) *AgentRandom {
 	return &AgentRandom{
-		pool:  p,
 		cards: NewPlayersCards(),
 	}
 }
 
-func (a *AgentRandom) Lead() uint {
+func (a *AgentRandom) Lead(_ *Pool, _ *Gamestate) uint {
 	return a.cards.hand.drawRandom()
 }
 
-func (a *AgentRandom) Pass(lead uint) (uint, bool) {
+func (a *AgentRandom) Pass(_ *Pool, _ *Gamestate, lead uint) (uint, bool) {
 	legalCards, followedSuit := a.cards.hand.legalCards(lead, true)
 	return legalCards.drawRandom(), followedSuit
 }
 
 func (a *AgentRandom) Card() *PlayersCards {
 	return a.cards
-}
-
-func (a *AgentRandom) State() *Gamestate {
-	return a.state
-}
-
-func (a *AgentRandom) SetState(gamestate *Gamestate) {
-	a.state = gamestate
 }
 

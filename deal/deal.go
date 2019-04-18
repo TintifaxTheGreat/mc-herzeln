@@ -1,6 +1,7 @@
 package deal
 
 import (
+	"fmt"
 	"math/bits"
 	"math/rand"
 	"strconv"
@@ -17,11 +18,8 @@ var ALLCOLORS [COLORS]bitmap
 var ALLFIGURES [FIGURES]bitmap
 var CARDSTRINGS [COLORS * FIGURES]string
 
-func NewGame(pool *Pool, agents [PLAYERS] AgentPlayer) *Deal {
-	gamestate := &Gamestate{}
-	for player := uint(0); player < PLAYERS; player++ {
-		agents[player].SetState(gamestate)
-	}
+func NewDeal(pool *Pool, state *Gamestate, agents [PLAYERS] AgentPlayer) *Deal {
+	gamestate := state
 	return &Deal{
 		cardpool: pool,
 		players:  agents,
@@ -48,38 +46,39 @@ func (g *Deal) dealCards() {
 }
 
 func (g *Deal) play() {
-	// TODO Fixme
 	for ; g.state.tricksCount < INHAND; {
 		Info("Stich " + strconv.Itoa(int(1+g.state.tricksCount)))
-
-		g.state.currentPlayer = g.state.leadPlayer
-		var play, lead uint
-		highest := CardValue{0, 0}
-		var followedSuit bool
-
-		Info("Ausspiel Spieler " + strconv.Itoa(int(1+g.state.currentPlayer)))
-
 		for i := uint(0); i < PLAYERS; i++ {
-			Info(g.players[i].Card().Show(i == g.state.leadPlayer))
+			Info(g.players[i].Card().Show(false))
 		}
 
+		//g.state.currentPlayer = g.state.leadPlayer
+		//var play, lead uint
+		//highest := CardValue{0, 0}
+		g.state.currentHiPlayer = 0
+		g.state.currentHiValue = 0
+		var followedSuit bool
+
 		for i := uint(0); i < PLAYERS; i++ {
 
-			if i == 0 {
+			if g.state.currentPlayer == g.state.leadPlayer {
 				// lead
-				lead = g.players[g.state.currentPlayer].Lead()
-				play = lead
-				highest = CardValue{g.state.currentPlayer, value(lead)}
+				g.state.leadCard = g.players[g.state.currentPlayer].Lead(g.cardpool, g.state)
+				g.state.currentCard = g.state.leadCard
+				g.state.currentHiValue = value(g.state.leadCard)
+				g.state.currentHiPlayer = g.state.currentPlayer
 			} else {
 				// pass
-				play, followedSuit = g.players[g.state.currentPlayer].Pass(lead)
+				g.state.currentCard, followedSuit = g.players[g.state.currentPlayer].Pass(g.cardpool, g.state, g.state.leadCard)
 
-				if followedSuit && (value(play) < highest.value) {
-					highest = CardValue{g.state.currentPlayer, value(play)}
+				if followedSuit && (value(g.state.currentCard) < g.state.currentHiValue) {
+					fmt.Println("im there")
+					g.state.currentHiValue = value(g.state.currentCard)
+					g.state.currentHiPlayer = g.state.currentPlayer
 				}
 			}
-			g.players[g.state.currentPlayer].Card().hand.unset(play)
-			g.cardpool.OnTable.set(play)
+			g.players[g.state.currentPlayer].Card().hand.unset(g.state.currentCard)
+			g.cardpool.OnTable.set(g.state.currentCard)
 			Info(g.cardpool.OnTable.ToString())
 
 			g.state.currentPlayer += 1
@@ -88,12 +87,13 @@ func (g *Deal) play() {
 			}
 		}
 
-		*g.players[highest.player].Card().tricks |= *g.cardpool.OnTable
+		*g.players[g.state.currentHiPlayer].Card().tricks |= *g.cardpool.OnTable
 		*g.cardpool.Dropped |= *g.cardpool.OnTable
 		*g.cardpool.OnTable = 0
 
 		g.state.tricksCount++
-		g.state.leadPlayer = highest.player
+		g.state.leadPlayer = g.state.currentHiPlayer
+		g.state.currentPlayer = g.state.currentHiPlayer
 		Info("Trick won by player " + strconv.Itoa(int(1+g.state.leadPlayer)))
 	}
 }

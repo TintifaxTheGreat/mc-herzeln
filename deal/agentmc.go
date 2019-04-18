@@ -4,44 +4,65 @@ type AgentMonteCarlo Agent
 
 func NewAgentMonteCarlo(p *Pool) *AgentMonteCarlo {
 	return &AgentMonteCarlo{
-		pool:  p,
 		cards: NewPlayersCards(),
 	}
 }
 
-func (a *AgentMonteCarlo) Lead() uint {
-	tricks := a.state.tricksCount
-	if tricks == INHAND {
+func (a *AgentMonteCarlo) Lead(pool *Pool, state *Gamestate) uint {
+	// if there is only one card left, play this card
+	if state.tricksCount == INHAND {
 		return a.cards.hand.next(0)
 	}
-	/*
+
 	tPool := &Pool{}
-	tCards := &PlayersCards{}
-	index := uint(0)
+	tState := state
 
+	aBuddy := NewAgentRandom(tPool)
+	bBuddy := NewAgentRandom(tPool)
+	cBuddy := NewAgentRandom(tPool)
+	dBuddy := NewAgentRandom(tPool)
 
+	cardsOfOtherPlayers := *pool.NotDropped &^ *a.cards.hand
 
-	// TODO infinite loop
-	for i := uint(0); i < 1; i++ {
-		for i := unit(tricks); i <  INHAND; i++ {
+	foo := uint(0) // TODO FIXME
+	for {
+		// distribute remaining cards to other players
+		foo = cardsOfOtherPlayers.drawRandom()
+		tPool.NotDropped.unset(foo)
+		bBuddy.cards.hand.set(foo)
+
+		foo = cardsOfOtherPlayers.drawRandom()
+		tPool.NotDropped.unset(foo)
+		cBuddy.cards.hand.set(foo)
+
+		foo = cardsOfOtherPlayers.drawRandom()
+		tPool.NotDropped.unset(foo)
+		dBuddy.cards.hand.set(foo)
+
+		index := uint(0)
+		for i := state.tricksCount; i < INHAND; i++ {
 			index = a.cards.hand.next(index)
-			tPool = a.pool.copy()
-			tCards = a.cards.copy()
 
-			for
+			// update game state
+			tState.tricksCount--
+			tState.currentPlayer += 1
+			if tState.currentPlayer == PLAYERS {
+				tState.currentPlayer = 0
+			}
 
-			//assign cards from pool to the other players
-
-			//playout game
-
-			// TODO add stuff here
+			playout := NewDeal(tPool, tState, [PLAYERS]AgentPlayer{aBuddy, bBuddy, cBuddy, dBuddy,})
+			playout.Play()
 		}
+
+
+		//TODO Fixme
+		break
 	}
-	*/
+	// TODO Fixme
 	return 7
 }
 
-func (a *AgentMonteCarlo) Pass(lead uint) (uint, bool) {
+func (a *AgentMonteCarlo) Pass(pool *Pool, state *Gamestate, lead uint) (uint, bool) {
 	legalCards, followedSuit := a.cards.hand.legalCards(lead, true)
 	return legalCards.drawRandom(), followedSuit //TODO FIXME
 }
@@ -49,12 +70,3 @@ func (a *AgentMonteCarlo) Pass(lead uint) (uint, bool) {
 func (a *AgentMonteCarlo) Card() *PlayersCards {
 	return a.cards
 }
-
-func (a *AgentMonteCarlo) State() *Gamestate {
-	return a.state
-}
-
-func (a *AgentMonteCarlo) SetState(gamestate *Gamestate) {
-	a.state = gamestate
-}
-
