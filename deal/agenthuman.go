@@ -4,7 +4,7 @@ import "fmt"
 
 type AgentHuman Agent
 
-func NewAgentHuman(p *Pool) *AgentHuman {
+func NewAgentHuman() *AgentHuman {
 	return &AgentHuman{
 		cards: NewPlayersCards(),
 	}
@@ -17,7 +17,7 @@ func (a *AgentHuman) Lead(pool *Pool, state *Gamestate,) uint {
 func (a *AgentHuman) Pass(pool *Pool, state *Gamestate, lead uint) (uint, bool) {
 	legalCards, followedSuit := a.cards.hand.legalCards(lead, true)
 	fmt.Print("--->LEGAL ")
-	Info(legalCards.ToString())
+	Info("legal",legalCards.ToString())
 	index := uint(0)
 	for {
 		index = a.readInput()
@@ -41,4 +41,11 @@ func (a *AgentHuman) readInput() uint {
 			return index
 		}
 	}
+}
+
+// deep copy
+func (a *AgentHuman) Copy() AgentPlayer {
+	ar := NewAgentHuman()
+	ar.cards = a.cards.copy()
+	return ar
 }

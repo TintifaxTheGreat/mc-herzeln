@@ -9,15 +9,9 @@ func (cv *CardValue) value() uint {
 	return cv.index % FIGURES
 }
 
-func (cv *CardValue) next() {
-	cv.player += 1
-	if cv.player == PLAYERS {
-		cv.player = 0
-	}
-}
-
 type Gamestate struct {
 	tricksCount uint
+	playCount   uint
 	lead        CardValue
 	current     CardValue
 	high        CardValue
@@ -26,6 +20,7 @@ type Gamestate struct {
 func (g *Gamestate) copy() *Gamestate {
 	return &Gamestate{
 		tricksCount: g.tricksCount,
+		playCount:   g.playCount,
 		lead:        g.lead,
 		current:     g.current,
 		high:        g.high,

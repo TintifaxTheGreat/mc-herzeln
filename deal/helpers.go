@@ -53,8 +53,8 @@ func IndexOfCard(s string) (uint, bool) {
 	return index, found
 }
 
-func Info(s string) {
+func Info(t string, s string) {
 	if INFO {
-		fmt.Println(s)
+		fmt.Println(s + " (" + t + ")")
 	}
 }

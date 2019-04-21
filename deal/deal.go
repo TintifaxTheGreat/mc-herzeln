@@ -8,7 +8,7 @@ import (
 )
 
 type Deal struct {
-	players  [PLAYERS] AgentPlayer
+	players  AllPlayers
 	cardpool *Pool
 	state    *Gamestate
 }
@@ -17,7 +17,7 @@ var ALLCOLORS [COLORS]bitmap
 var ALLFIGURES [FIGURES]bitmap
 var CARDSTRINGS [COLORS * FIGURES]string
 
-func NewDeal(pool *Pool, state *Gamestate, agents [PLAYERS] AgentPlayer) *Deal {
+func NewDeal(pool *Pool, state *Gamestate, agents AllPlayers) *Deal {
 	gamestate := state
 	return &Deal{
 		cardpool: pool,
@@ -32,7 +32,7 @@ func (g *Deal) Play() [PLAYERS] int {
 }
 
 func (g *Deal) DealCards() {
-	Info(g.cardpool.NotDropped.ToString())
+	Info("dealing cards", g.cardpool.NotDropped.ToString())
 	var index uint
 	for player := uint(0); player < PLAYERS; player++ {
 		for i := uint(0); i < INHAND; i++ {
@@ -46,45 +46,27 @@ func (g *Deal) DealCards() {
 func (g *Deal) play() {
 	var followedSuit bool
 	for ; g.state.tricksCount < INHAND; {
-		Info("Stich " + strconv.Itoa(int(1+g.state.tricksCount)))
-		for i := uint(0); i < PLAYERS; i++ {
-			Info(g.players[i].Card().Show(false))
-		}
-
-		g.state.high = CardValue{}
-		for i := uint(0); i < PLAYERS; i++ {
-
-			if g.state.current.player == g.state.lead.player {
-				// lead
-				g.state.lead.index = g.players[g.state.current.player].Lead(g.cardpool, g.state)
-				g.state.current.index = g.state.lead.index
-				g.state.high = CardValue{
-					index:  g.state.lead.index,
-					player: g.state.current.player,
-				}
-			} else {
-				// pass
-				g.state.current.index, followedSuit = g.players[g.state.current.player].Pass(g.cardpool, g.state, g.state.lead.index)
-
-				if followedSuit && (g.state.current.value() < g.state.high.value()) {
-					g.state.high = g.state.current
-				}
+	//for k:=1;k<8;k++ {
+		if g.state.playCount == 0 {
+			for i := uint(0); i < PLAYERS; i++ {
+				Info("trick "+strconv.Itoa(int(1+g.state.tricksCount)), g.players[i].Card().Show(false))
 			}
-			g.players[g.state.current.player].Card().hand.unset(g.state.current.index)
-			g.cardpool.OnTable.set(g.state.current.index)
-			Info(g.cardpool.OnTable.ToString())
+			// lead
+			g.state.lead.index = g.players[g.state.current.player].Lead(g.cardpool, g.state)
+			g.state.current.index = g.state.lead.index
+			g.state.high = CardValue{
+				index:  g.state.lead.index,
+				player: g.state.current.player,
+			}
+		} else {
+			// pass
+			g.state.current.index, followedSuit = g.players[g.state.current.player].Pass(g.cardpool, g.state, g.state.lead.index)
 
-			g.state.current.next()
+			if followedSuit && (g.state.current.value() < g.state.high.value()) {
+				g.state.high = g.state.current
+			}
 		}
-
-		*g.players[g.state.high.player].Card().tricks |= *g.cardpool.OnTable
-		*g.cardpool.Dropped |= *g.cardpool.OnTable
-		*g.cardpool.OnTable = 0
-
-		g.state.tricksCount++
-		g.state.lead.player = g.state.high.player
-		g.state.current.player = g.state.high.player
-		Info("Trick won by player " + strconv.Itoa(int(1+g.state.lead.player)))
+		g.players.update(g.state, g.cardpool)
 	}
 }
 

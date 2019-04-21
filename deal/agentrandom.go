@@ -22,9 +22,8 @@ func (a *AgentRandom) Card() *PlayersCards {
 }
 
 // deep copy
-func (a *AgentRandom) copy() *AgentRandom {
+func (a *AgentRandom) Copy() AgentPlayer {
 	ar := NewAgentRandom()
 	ar.cards = a.cards.copy()
 	return ar
 }
-

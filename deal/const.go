@@ -1,7 +1,7 @@
 package deal
 
 const (
-	INFO = false
+	INFO = true
 
 	BITMAP_SIZE = 64
 
