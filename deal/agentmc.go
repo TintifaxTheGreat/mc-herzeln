@@ -29,6 +29,9 @@ func (a *AgentMonteCarlo) playouts(ctx context.Context, pool *Pool, state *Games
 	maxKey := uint(0)
 	acc := make(map[uint]int)
 
+	innerMaxKey := uint(0)
+	innerAcc := make(map[uint]int)
+
 	buddies := AllPlayers{}
 	for player := uint(0); player < PLAYERS; player++ {
 		buddies[player] = NewAgentRandom()
@@ -48,8 +51,6 @@ func (a *AgentMonteCarlo) playouts(ctx context.Context, pool *Pool, state *Games
 
 	rIndex := uint(0)
 	count := uint(0)
-	// FIXME
-	//for vv := 0; vv < 2; vv++ {
 	for {
 		select {
 		case <-ctx.Done():
@@ -70,14 +71,8 @@ func (a *AgentMonteCarlo) playouts(ctx context.Context, pool *Pool, state *Games
 			tState := state.copy()
 			tPool := pool.copy()
 			tBuddies := buddies.copy()
-			//*tHiddenCards := *hiddenCards
 			tHiddenCards := newBitmap(false)
 			*tHiddenCards = *hiddenCards
-
-			Info("HIDDEN", hiddenCards.ToString())
-			Info("HIDDEN", tHiddenCards.ToString())
-
-			//fmt.Println("??????????????????????????")
 
 			thisPlayer := tState.current.player
 
@@ -91,7 +86,7 @@ func (a *AgentMonteCarlo) playouts(ctx context.Context, pool *Pool, state *Games
 					}
 				}
 			}
-
+			innerAcc = make(map[uint]int)
 			index := uint(0)
 			for i := tState.tricksCount; i < INHAND; i++ {
 
@@ -119,19 +114,18 @@ func (a *AgentMonteCarlo) playouts(ctx context.Context, pool *Pool, state *Games
 				playout.Play()
 
 				count++
-				acc[index] += playout.playerOutcome(thisPlayer) //TODO Fixme
+				innerAcc[index] += playout.playerOutcome(thisPlayer) //TODO Fixme
 			}
+			innerMaxKey = 999
+			innerAcc[innerMaxKey] = -99999 // TODO FIxme
+			for key, value := range innerAcc {
+				if value > innerAcc[innerMaxKey] {
+					innerMaxKey = key
+				}
+			}
+			acc[innerMaxKey]++
 		}
-		/*
-			fmt.Print("Games played: ")
-			fmt.Println(count)
-			fmt.Println(acc)
-			fmt.Println(maxKey)
-			return maxKey
-			break */
-
 	}
-	return 99
 }
 
 func (a *AgentMonteCarlo) Pass(pool *Pool, state *Gamestate, lead uint) (uint, bool) {
