@@ -20,20 +20,23 @@ func (a *AgentMonteCarlo) Lead(pool *Pool, state *Gamestate) uint {
 		return a.cards.hand.next(0)
 	}
 
-	ctx, _ := context.WithTimeout(context.Background(), time.Second)
+	// limit execution time of calculation
+	ctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
 	return a.playouts(ctx, pool, state)
 }
 
 func (a *AgentMonteCarlo) playouts(ctx context.Context, pool *Pool, state *Gamestate) uint {
-	acc := make(map[uint]int)
 	maxKey := uint(0)
+	acc := make(map[uint]int)
 
-	buddies := [PLAYERS] *AgentRandom{}
+	buddies := AllPlayers{}
 	for player := uint(0); player < PLAYERS; player++ {
 		buddies[player] = NewAgentRandom()
 	}
-	buddies[state.current.player].cards.tricks = a.cards.tricks
-	buddies[state.current.player].cards.hand = a.cards.hand
+	buddies[state.current.player].Card().tricks = a.cards.tricks
+	buddies[state.current.player].Card().hand = a.cards.hand
+
+	fmt.Println(a.cards.hand.ToString())
 
 	// calculate the hidden cards
 	hiddenCards := newBitmap(true)
@@ -41,60 +44,94 @@ func (a *AgentMonteCarlo) playouts(ctx context.Context, pool *Pool, state *Games
 	*hiddenCards &^= *pool.Dropped
 	*hiddenCards &^= *pool.OnTable
 
+	fmt.Println(hiddenCards.ToString())
+
 	rIndex := uint(0)
 	count := uint(0)
+	// FIXME
+	//for vv := 0; vv < 2; vv++ {
 	for {
 		select {
 		case <-ctx.Done():
+			maxKey = 999
+			acc[maxKey] = -9999999 // TODO FIxme
+			for key, value := range acc {
+				if value > acc[maxKey] {
+					maxKey = key
+				}
+			}
 			fmt.Print("Games played: ")
 			fmt.Println(count)
+			fmt.Println(acc)
+			fmt.Println(maxKey)
 			return maxKey
 		default:
+			// copy everything
+			tState := state.copy()
+			tPool := pool.copy()
+			tBuddies := buddies.copy()
+			//*tHiddenCards := *hiddenCards
+			tHiddenCards := newBitmap(false)
+			*tHiddenCards = *hiddenCards
+
+			Info("HIDDEN", hiddenCards.ToString())
+			Info("HIDDEN", tHiddenCards.ToString())
+
+			//fmt.Println("??????????????????????????")
+
+			thisPlayer := tState.current.player
+
 			// distribute remaining cards to other players
-			for i := state.tricksCount; i < INHAND; i++ {
+			for i := tState.tricksCount; i < INHAND; i++ {
 				for player := uint(0); player < PLAYERS; player++ {
-					if player != state.current.player {
-						rIndex = hiddenCards.drawRandom()
-						hiddenCards.unset(rIndex)
-						buddies[player].cards.hand.set(rIndex)
+					if player != tState.current.player {
+						rIndex = tHiddenCards.drawRandom()
+						tHiddenCards.unset(rIndex)
+						tBuddies[player].Card().hand.set(rIndex)
 					}
 				}
 			}
 
-
-			for player := uint(0); player < PLAYERS; player++ {
-				Info(buddies[player].cards.Show(false))
-			}
-
-
 			index := uint(0)
-			for i := state.tricksCount; i < INHAND; i++ {
-				index = a.cards.hand.next(index)
+			for i := tState.tricksCount; i < INHAND; i++ {
 
-				// update game state
-				state.current.next()
+				// copy everything
+				tState2 := tState.copy()
+				tPool2 := tPool.copy()
+				tBuddies2 := tBuddies.copy()
 
-				PlayersCopy := [PLAYERS]AgentPlayer{}
-				for player := uint(0); player < PLAYERS; player++ {
-					PlayersCopy[player] = buddies[player].copy()
+				// index = a.cards.hand.next(index)
+				index = tBuddies2[tState2.current.player].Card().hand.next(index)
+
+				tBuddies2[tState2.current.player].Card().hand.unset(index)
+				tPool2.OnTable.set(index)
+
+				tState2.lead.index = index
+				tState2.current.index = tState2.lead.index
+				tState2.high = CardValue{
+					index:  tState2.lead.index,
+					player: tState2.current.player,
 				}
 
+				tBuddies2.update(tState2, tPool2)
 
-				for player := uint(0); player < PLAYERS; player++ {
-					Info(PlayersCopy[player].Card().Show(false))
-				}
-
-
-				playout := NewDeal(pool.copy(), state.copy(), PlayersCopy)
+				playout := NewDeal(tPool2, tState2, *tBuddies2)
 				playout.Play()
+
 				count++
-				acc[index] += playout.playerOutcome(state.current.player)
-				if acc[maxKey] < acc[index] {
-					maxKey = index
-				}
+				acc[index] += playout.playerOutcome(thisPlayer) //TODO Fixme
 			}
 		}
+		/*
+			fmt.Print("Games played: ")
+			fmt.Println(count)
+			fmt.Println(acc)
+			fmt.Println(maxKey)
+			return maxKey
+			break */
+
 	}
+	return 99
 }
 
 func (a *AgentMonteCarlo) Pass(pool *Pool, state *Gamestate, lead uint) (uint, bool) {
@@ -107,7 +144,7 @@ func (a *AgentMonteCarlo) Card() *PlayersCards {
 }
 
 // deep copy
-func (a *AgentMonteCarlo) copy() *AgentMonteCarlo {
+func (a *AgentMonteCarlo) Copy() AgentPlayer {
 	ar := NewAgentMonteCarlo()
 	ar.cards = a.cards.copy()
 	return ar

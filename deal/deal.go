@@ -46,7 +46,6 @@ func (g *Deal) DealCards() {
 func (g *Deal) play() {
 	var followedSuit bool
 	for ; g.state.tricksCount < INHAND; {
-	//for k:=1;k<8;k++ {
 		if g.state.playCount == 0 {
 			for i := uint(0); i < PLAYERS; i++ {
 				Info("trick "+strconv.Itoa(int(1+g.state.tricksCount)), g.players[i].Card().Show(false))
@@ -87,10 +86,11 @@ func (g *Deal) playerOutcome(player uint) int {
 	for i := uint(0); i < PLAYERS; i++ {
 		if i == player {
 			result += outcome[i]
-			continue
+		} else {
+			result -= outcome[i]
 		}
-		result -= outcome[i]
 	}
+	//fmt.Println(player,result)
 	return result
 }
 
