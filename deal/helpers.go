@@ -55,6 +55,11 @@ func IndexOfCard(s string) (uint, bool) {
 	return index, found
 }
 
+// Checks if two cards (represented as index) are of the same color
+func colorMatch(a uint, b uint) bool {
+	return a/FIGURES == b/FIGURES
+}
+
 func Info(t string, s string) {
 	if INFO {
 		fmt.Println(s + " (" + t + ")")

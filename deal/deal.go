@@ -55,7 +55,6 @@ func (g *Deal) DealCards() {
 }
 
 func (g *Deal) play() {
-	var followedSuit bool
 	for ; g.state.tricksCount < INHAND; {
 		if g.state.playCount == 0 {
 			for i := uint(0); i < PLAYERS; i++ {
@@ -71,9 +70,10 @@ func (g *Deal) play() {
 			}
 		} else {
 			// pass
-			g.state.current.index, followedSuit = g.players[g.state.current.player].Pass(g.cardpool, g.state, g.state.lead.index)
+			g.state.current.index, _ = g.players[g.state.current.player].Pass(g.cardpool, g.state, g.state.lead.index)
 
-			if followedSuit && (g.state.current.value() < g.state.high.value()) {
+			if colorMatch(g.state.lead.index, g.state.current.index) &&
+				(g.state.current.value() < g.state.high.value()) {
 				g.state.high = g.state.current
 			}
 		}

@@ -19,7 +19,7 @@ var GoalNoTricks = goal(func(players AllPlayers) [PLAYERS] int {
 	var points [PLAYERS] int
 	for player := uint(0); player < PLAYERS; player++ {
 		// count all the players tricks
-		points[player] -= bits.OnesCount64(uint64(*players[player].Card().tricks)) / 4
+		points[player] -= bits.OnesCount64(uint64(*players[player].Card().tricks)) / int(PLAYERS)
 	}
 	return points
 })
