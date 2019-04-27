@@ -6,7 +6,7 @@ Wrapper, entire game in 4 stages
 
 proper information when using agent human
 
-refinement of Readme
+refinement of agentmc
 
 
 webassembly API
