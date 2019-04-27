@@ -10,19 +10,34 @@ func (cv *CardValue) value() uint {
 }
 
 type Gamestate struct {
-	tricksCount uint
-	playCount   uint
-	lead        CardValue
-	current     CardValue
-	high        CardValue
+	tricksCount         uint
+	playCount           uint
+	lead                CardValue
+	current             CardValue
+	high                CardValue
+	constraintFirstLead constraintLead
+	constraintPassAll   constraintPass
+	goal                goal
 }
 
-func (g *Gamestate) copy() *Gamestate {
+// factory for Gamestate
+func NewGamestate(cfl constraintLead, cpa constraintPass, goal goal) *Gamestate {
 	return &Gamestate{
-		tricksCount: g.tricksCount,
-		playCount:   g.playCount,
-		lead:        g.lead,
-		current:     g.current,
-		high:        g.high,
+		constraintFirstLead: cfl,
+		constraintPassAll:   cpa,
+		goal:                goal,
+	}
+}
+
+func (s *Gamestate) copy() *Gamestate {
+	return &Gamestate{
+		tricksCount:         s.tricksCount,
+		playCount:           s.playCount,
+		lead:                s.lead,
+		current:             s.current,
+		high:                s.high,
+		constraintFirstLead: s.constraintFirstLead,
+		constraintPassAll:   s.constraintPassAll,
+		goal:                s.goal,
 	}
 }

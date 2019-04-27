@@ -2,6 +2,7 @@ package deal
 
 import (
 	"fmt"
+	"math/rand"
 )
 
 // misc helper methods
@@ -58,6 +59,11 @@ func IndexOfCard(s string) (uint, bool) {
 // Checks if two cards (represented as index) are of the same color
 func colorMatch(a uint, b uint) bool {
 	return a/FIGURES == b/FIGURES
+}
+
+// Returns random Boolean
+func randBool() bool {
+	return 0 == rand.Uint64()&(1<<63)
 }
 
 func Info(t string, s string) {

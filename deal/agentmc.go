@@ -3,6 +3,7 @@ package deal
 import (
 	"context"
 	"fmt"
+	"math/bits"
 	"time"
 )
 
@@ -59,6 +60,8 @@ func (a *AgentMonteCarlo) playouts(ctx context.Context, pool *Pool, state *Games
 			for key, value := range acc {
 				if value > acc[maxKey] {
 					maxKey = key
+				} else if value == acc[maxKey] && randBool() {
+					maxKey = key
 				}
 			}
 			fmt.Print("Games played: ")
@@ -88,15 +91,18 @@ func (a *AgentMonteCarlo) playouts(ctx context.Context, pool *Pool, state *Games
 			}
 			innerAcc = make(map[uint]int)
 			index := uint(0)
-			for i := tState.tricksCount; i < INHAND; i++ {
+
+			legalCards := state.constraintFirstLead(tBuddies[tState.current.player].Card().hand, state.tricksCount)
+			size := bits.OnesCount64(uint64(*legalCards ))
+
+			for i := 0; i < size; i++ {
 
 				// copy everything
 				tState2 := tState.copy()
 				tPool2 := tPool.copy()
 				tBuddies2 := tBuddies.copy()
 
-				// index = a.cards.hand.next(index)
-				index = tBuddies2[tState2.current.player].Card().hand.next(index)
+				index = legalCards.next(index)
 
 				tBuddies2[tState2.current.player].Card().hand.unset(index)
 				tPool2.OnTable.set(index)
@@ -110,7 +116,7 @@ func (a *AgentMonteCarlo) playouts(ctx context.Context, pool *Pool, state *Games
 
 				tBuddies2.update(tState2, tPool2)
 
-				playout := NewDeal(tPool2, tState2, *tBuddies2, ConstraintLeadAny, ConstraintPassAny, GoalNoQueens)
+				playout := NewDeal(tPool2, tState2, *tBuddies2)
 				playout.Play()
 
 				count++
@@ -121,6 +127,8 @@ func (a *AgentMonteCarlo) playouts(ctx context.Context, pool *Pool, state *Games
 			for key, value := range innerAcc {
 				if value > innerAcc[innerMaxKey] {
 					innerMaxKey = key
+				} else if value == innerAcc[innerMaxKey] && randBool() {
+					innerMaxKey = key
 				}
 			}
 			acc[innerMaxKey]++
@@ -128,9 +136,9 @@ func (a *AgentMonteCarlo) playouts(ctx context.Context, pool *Pool, state *Games
 	}
 }
 
-func (a *AgentMonteCarlo) Pass(pool *Pool, state *Gamestate, lead uint) (uint, bool) {
-	legalCards, followedSuit := a.cards.hand.legalCards(lead, true)
-	return legalCards.drawRandom(), followedSuit //TODO FIXME
+func (a *AgentMonteCarlo) Pass(pool *Pool, state *Gamestate, lead uint) uint {
+	legalCards := state.constraintPassAll(a.cards.hand, state.tricksCount, lead)
+	return legalCards.drawRandom() // TODO Fixme
 }
 
 func (a *AgentMonteCarlo) Card() *PlayersCards {

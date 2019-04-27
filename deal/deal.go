@@ -7,33 +7,20 @@ import (
 )
 
 type Deal struct {
-	players             AllPlayers
-	cardpool            *Pool
-	state               *Gamestate
-	constraintFirstLead constraintFirstLead
-	constraintPassAll   constraintPassAll
-	goal                goal
+	players  AllPlayers
+	cardpool *Pool
+	state    *Gamestate
 }
 
 var ALLCOLORS [COLORS]bitmap
 var ALLFIGURES [FIGURES]bitmap
 var CARDSTRINGS [COLORS * FIGURES]string
 
-func NewDeal(
-	pool *Pool,
-	state *Gamestate,
-	agents AllPlayers,
-	cfl constraintFirstLead,
-	cpa constraintPassAll,
-	goal goal,
-) *Deal {
+func NewDeal(pool *Pool, state *Gamestate, agents AllPlayers, ) *Deal {
 	return &Deal{
-		cardpool:            pool,
-		players:             agents,
-		state:               state,
-		constraintFirstLead: cfl,
-		constraintPassAll:   cpa,
-		goal:                goal,
+		cardpool: pool,
+		players:  agents,
+		state:    state,
 	}
 }
 
@@ -70,7 +57,7 @@ func (g *Deal) play() {
 			}
 		} else {
 			// pass
-			g.state.current.index, _ = g.players[g.state.current.player].Pass(g.cardpool, g.state, g.state.lead.index)
+			g.state.current.index = g.players[g.state.current.player].Pass(g.cardpool, g.state, g.state.lead.index)
 
 			if colorMatch(g.state.lead.index, g.state.current.index) &&
 				(g.state.current.value() < g.state.high.value()) {
@@ -83,7 +70,7 @@ func (g *Deal) play() {
 
 // the outcome of the game
 func (g *Deal) outcome() [PLAYERS] int {
-	return g.goal(g.players)
+	return g.state.goal(g.players)
 }
 
 // the outcome of the game from the perspective of a player

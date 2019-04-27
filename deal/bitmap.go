@@ -67,17 +67,6 @@ func (b *bitmap) drawRandom() uint {
 	return index
 }
 
-// given a lead card, calculate all cards legal to pass
-func (b *bitmap) legalCards(leadCard uint, followSuit bool) (*bitmap, bool) {
-	color := uint(leadCard / FIGURES)
-	legalCards := *b & ALLCOLORS[color]
-	size := bits.OnesCount64(uint64(legalCards))
-	if size == 0 {
-		return b, false
-	}
-	return &legalCards, true
-}
-
 // string representation of Bitmap
 func (b *bitmap) ToString() string {
 	result := ""

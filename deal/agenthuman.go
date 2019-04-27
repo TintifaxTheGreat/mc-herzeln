@@ -11,18 +11,27 @@ func NewAgentHuman() *AgentHuman {
 }
 
 func (a *AgentHuman) Lead(pool *Pool, state *Gamestate,) uint {
-	return a.readInput()
-}
-
-func (a *AgentHuman) Pass(pool *Pool, state *Gamestate, lead uint) (uint, bool) {
-	legalCards, followedSuit := a.cards.hand.legalCards(lead, true)
+	legalCards := state.constraintFirstLead(a.cards.hand, state.tricksCount)
 	fmt.Print("--->LEGAL ")
 	Info("legal",legalCards.ToString())
 	index := uint(0)
 	for {
 		index = a.readInput()
 		if legalCards.isSet(index) {
-			return index, followedSuit
+			return index
+		}
+	}
+}
+
+func (a *AgentHuman) Pass(pool *Pool, state *Gamestate, lead uint) uint {
+	legalCards := state.constraintPassAll(a.cards.hand, state.tricksCount, lead)
+	fmt.Print("--->LEGAL ")
+	Info("legal",legalCards.ToString())
+	index := uint(0)
+	for {
+		index = a.readInput()
+		if legalCards.isSet(index) {
+			return index
 		}
 	}
 }

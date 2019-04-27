@@ -1,27 +1,38 @@
 package deal
 
-type constraintFirstLead func(hand *bitmap) *bitmap
+import "math/bits"
+
+type constraintLead func(hand *bitmap, tricksCount uint) *bitmap
 
 // no constraints
-var ConstraintLeadAny = constraintFirstLead(func(hand *bitmap) *bitmap {
+var ConstraintLeadAny = constraintLead(func(hand *bitmap, tricksCount uint) *bitmap {
 	return hand
 })
 
 // at the first trick, lead of hearts is not allowed
-var ConstraintLeadNoHearts = constraintFirstLead(func(hand *bitmap) *bitmap {
-	result := *hand & ALLCOLORS[0]
+var ConstraintLeadNoHearts = constraintLead(func(hand *bitmap, tricksCount uint) *bitmap {
+	if tricksCount != 0 {
+		return hand
+	}
+	result := *hand &^ ALLCOLORS[0]
+	if 0 == bits.OnesCount64(uint64(result)) {
+		return hand
+	}
 	return &result
 })
 
-type constraintPassAll func(hand *bitmap, leadCard uint) *bitmap
+type constraintPass func(hand *bitmap, tricksCount uint, leadCard uint) *bitmap
 
 // no constraints
-var ConstraintPassAny = constraintPassAll(func(hand *bitmap, leadCard uint) *bitmap {
+var ConstraintPassAny = constraintPass(func(hand *bitmap, tricksCount uint, leadCard uint) *bitmap {
 	return hand
 })
 
 // follow suit rule
-var ConstraintPassFollowSuit = constraintPassAll(func(hand *bitmap, leadCard uint) *bitmap {
-	result := *hand & ALLCOLORS[0]
+var ConstraintPassFollowSuit = constraintPass(func(hand *bitmap, tricksCount uint, leadCard uint) *bitmap {
+	result := *hand & ALLCOLORS[uint(leadCard/FIGURES)]
+	if 0 == bits.OnesCount64(uint64(result)) {
+		return hand
+	}
 	return &result
 })

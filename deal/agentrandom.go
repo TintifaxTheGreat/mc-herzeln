@@ -8,13 +8,14 @@ func NewAgentRandom() *AgentRandom {
 	}
 }
 
-func (a *AgentRandom) Lead(_ *Pool, _ *Gamestate) uint {
-	return a.cards.hand.drawRandom()
+func (a *AgentRandom) Lead(_ *Pool, state *Gamestate) uint {
+	legalCards := state.constraintFirstLead(a.cards.hand, state.tricksCount)
+	return legalCards.drawRandom()
 }
 
-func (a *AgentRandom) Pass(_ *Pool, _ *Gamestate, lead uint) (uint, bool) {
-	legalCards, followedSuit := a.cards.hand.legalCards(lead, true)
-	return legalCards.drawRandom(), followedSuit
+func (a *AgentRandom) Pass(_ *Pool, state *Gamestate, lead uint) uint {
+	legalCards := state.constraintPassAll(a.cards.hand, state.tricksCount, lead)
+	return legalCards.drawRandom()
 }
 
 func (a *AgentRandom) Card() *PlayersCards {
