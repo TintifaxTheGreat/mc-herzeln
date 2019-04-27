@@ -2,10 +2,10 @@ package deal
 
 import "math/bits"
 
-type goal func(players AllPlayers) [PLAYERS] int
+type goal func(players AllPlayers, tricksCount uint) [PLAYERS] int
 
 // avoid hearts in the tricks
-var GoalNoHearts = goal(func(players AllPlayers) [PLAYERS] int {
+var GoalNoHearts = goal(func(players AllPlayers, tricksCount uint) [PLAYERS] int {
 	var points [PLAYERS] int
 	for player := uint(0); player < PLAYERS; player++ {
 		// count all hearts in the player's tricks
@@ -15,7 +15,7 @@ var GoalNoHearts = goal(func(players AllPlayers) [PLAYERS] int {
 })
 
 // avoid making tricks
-var GoalNoTricks = goal(func(players AllPlayers) [PLAYERS] int {
+var GoalNoTricks = goal(func(players AllPlayers, tricksCount uint) [PLAYERS] int {
 	var points [PLAYERS] int
 	for player := uint(0); player < PLAYERS; player++ {
 		// count all the players tricks
@@ -25,7 +25,7 @@ var GoalNoTricks = goal(func(players AllPlayers) [PLAYERS] int {
 })
 
 // avoid queens in the tricks
-var GoalNoQueens = goal(func(players AllPlayers) [PLAYERS] int {
+var GoalNoQueens = goal(func(players AllPlayers, tricksCount uint) [PLAYERS] int {
 	var points [PLAYERS] int
 	for player := uint(0); player < PLAYERS; player++ {
 		// count all queens in the player's tricks
@@ -34,14 +34,14 @@ var GoalNoQueens = goal(func(players AllPlayers) [PLAYERS] int {
 	return points
 })
 
-/*
 // avoid the king of hearts, and making the last trick
-var GoalNoGepetto = goal(func(players AllPlayers) [PLAYERS] int {
+var GoalNoGepetto = goal(func(players AllPlayers, tricksCount uint) [PLAYERS] int {
 	var points [PLAYERS] int
 	for player := uint(0); player < PLAYERS; player++ {
-		// count all hearts in the player's tricks
-		points[player] -= bits.OnesCount64(uint64(ALLCOLORS[0] & *players[player].Card().tricks))
+		// if king of hearts is in tricks, award 4 minus points
+		if players[player].Card().tricks.isSet(1) {
+			points[player] -= 4
+		}
 	}
 	return points
 })
-*/

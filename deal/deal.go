@@ -48,7 +48,6 @@ func (g *Deal) play() {
 				Info("trick "+strconv.Itoa(int(1+g.state.tricksCount)), g.players[i].Card().Show(false))
 			}
 			// lead
-			// TODO lead hearts in first trick is not allowed
 			g.state.lead.index = g.players[g.state.current.player].Lead(g.cardpool, g.state)
 			g.state.current.index = g.state.lead.index
 			g.state.high = CardValue{
@@ -70,7 +69,7 @@ func (g *Deal) play() {
 
 // the outcome of the game
 func (g *Deal) outcome() [PLAYERS] int {
-	return g.state.goal(g.players)
+	return g.state.goal(g.players, g.state.tricksCount)
 }
 
 // the outcome of the game from the perspective of a player

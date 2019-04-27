@@ -17,7 +17,7 @@ func NewAgentMonteCarlo() *AgentMonteCarlo {
 
 func (a *AgentMonteCarlo) Lead(pool *Pool, state *Gamestate) uint {
 	// if there is only one card left, play this card
-	if state.tricksCount == INHAND {
+	if 1+state.tricksCount == INHAND {
 		return a.cards.hand.next(0)
 	}
 
@@ -56,7 +56,7 @@ func (a *AgentMonteCarlo) playouts(ctx context.Context, pool *Pool, state *Games
 		select {
 		case <-ctx.Done():
 			maxKey = 999
-			acc[maxKey] = -9999999 // TODO FIxme
+			acc[maxKey] = -9999999
 			for key, value := range acc {
 				if value > acc[maxKey] {
 					maxKey = key
@@ -93,7 +93,7 @@ func (a *AgentMonteCarlo) playouts(ctx context.Context, pool *Pool, state *Games
 			index := uint(0)
 
 			legalCards := state.constraintFirstLead(tBuddies[tState.current.player].Card().hand, state.tricksCount)
-			size := bits.OnesCount64(uint64(*legalCards ))
+			size := bits.OnesCount64(uint64(*legalCards))
 
 			for i := 0; i < size; i++ {
 
@@ -120,10 +120,10 @@ func (a *AgentMonteCarlo) playouts(ctx context.Context, pool *Pool, state *Games
 				playout.Play()
 
 				count++
-				innerAcc[index] += playout.playerOutcome(thisPlayer) //TODO Fixme
+				innerAcc[index] += playout.playerOutcome(thisPlayer)
 			}
 			innerMaxKey = 999
-			innerAcc[innerMaxKey] = -99999 // TODO FIxme
+			innerAcc[innerMaxKey] = -9999999
 			for key, value := range innerAcc {
 				if value > innerAcc[innerMaxKey] {
 					innerMaxKey = key
