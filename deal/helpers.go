@@ -1,6 +1,8 @@
 package deal
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // misc helper methods
 type Helper struct{}

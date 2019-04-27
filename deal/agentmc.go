@@ -110,7 +110,7 @@ func (a *AgentMonteCarlo) playouts(ctx context.Context, pool *Pool, state *Games
 
 				tBuddies2.update(tState2, tPool2)
 
-				playout := NewDeal(tPool2, tState2, *tBuddies2)
+				playout := NewDeal(tPool2, tState2, *tBuddies2, ConstraintLeadAny, ConstraintPassAny, GoalHearts)
 				playout.Play()
 
 				count++

@@ -1,28 +1,39 @@
 package deal
 
 import (
-	"math/bits"
 	"math/rand"
 	"strconv"
 	"time"
 )
 
 type Deal struct {
-	players  AllPlayers
-	cardpool *Pool
-	state    *Gamestate
+	players             AllPlayers
+	cardpool            *Pool
+	state               *Gamestate
+	constraintFirstLead constraintFirstLead
+	constraintPassAll   constraintPassAll
+	goal                goal
 }
 
 var ALLCOLORS [COLORS]bitmap
 var ALLFIGURES [FIGURES]bitmap
 var CARDSTRINGS [COLORS * FIGURES]string
 
-func NewDeal(pool *Pool, state *Gamestate, agents AllPlayers) *Deal {
-	gamestate := state
+func NewDeal(
+	pool *Pool,
+	state *Gamestate,
+	agents AllPlayers,
+	cfl constraintFirstLead,
+	cpa constraintPassAll,
+	goal goal,
+) *Deal {
 	return &Deal{
-		cardpool: pool,
-		players:  agents,
-		state:    gamestate,
+		cardpool:            pool,
+		players:             agents,
+		state:               state,
+		constraintFirstLead: cfl,
+		constraintPassAll:   cpa,
+		goal:                goal,
 	}
 }
 
@@ -72,12 +83,7 @@ func (g *Deal) play() {
 
 // the outcome of the game
 func (g *Deal) outcome() [PLAYERS] int {
-	var points [PLAYERS] int
-	for player := uint(0); player < PLAYERS; player++ {
-		// count all hearts in the player's tricks
-		points[player] -= bits.OnesCount64(uint64(ALLCOLORS[0] & *g.players[player].Card().tricks))
-	}
-	return points
+	return g.goal(g.players)
 }
 
 // the outcome of the game from the perspective of a player
