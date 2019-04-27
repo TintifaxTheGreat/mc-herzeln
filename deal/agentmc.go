@@ -15,7 +15,7 @@ func NewAgentMonteCarlo() *AgentMonteCarlo {
 	}
 }
 
-func (a *AgentMonteCarlo) Lead(pool *Pool, state *Gamestate) uint {
+func (a *AgentMonteCarlo) Play(pool *Pool, state *Gamestate, isLead bool, lead uint) uint {
 	// if there is only one card left, play this card
 	if 1+state.tricksCount == INHAND {
 		return a.cards.hand.next(0)
@@ -23,10 +23,10 @@ func (a *AgentMonteCarlo) Lead(pool *Pool, state *Gamestate) uint {
 
 	// limit execution time of calculation
 	ctx, _ := context.WithTimeout(context.Background(), 1*time.Second)
-	return a.playouts(ctx, pool, state)
+	return a.playouts(ctx, pool, state, isLead, lead)
 }
 
-func (a *AgentMonteCarlo) playouts(ctx context.Context, pool *Pool, state *Gamestate) uint {
+func (a *AgentMonteCarlo) playouts(ctx context.Context, pool *Pool, state *Gamestate, isLead bool, lead uint) uint {
 	maxKey := uint(0)
 	acc := make(map[uint]int)
 
@@ -92,7 +92,12 @@ func (a *AgentMonteCarlo) playouts(ctx context.Context, pool *Pool, state *Games
 			innerAcc = make(map[uint]int)
 			index := uint(0)
 
-			legalCards := state.constraintFirstLead(tBuddies[tState.current.player].Card().hand, state.tricksCount)
+			legalCards := new(bitmap)
+			if isLead {
+				legalCards = state.constraintFirstLead(tBuddies[tState.current.player].Card().hand, state.tricksCount)
+			} else {
+				legalCards = state.constraintPassAll(tBuddies[tState.current.player].Card().hand, state.tricksCount, lead)
+			}
 			size := bits.OnesCount64(uint64(*legalCards))
 
 			for i := 0; i < size; i++ {
@@ -134,11 +139,6 @@ func (a *AgentMonteCarlo) playouts(ctx context.Context, pool *Pool, state *Games
 			acc[innerMaxKey]++
 		}
 	}
-}
-
-func (a *AgentMonteCarlo) Pass(pool *Pool, state *Gamestate, lead uint) uint {
-	legalCards := state.constraintPassAll(a.cards.hand, state.tricksCount, lead)
-	return legalCards.drawRandom() // TODO Fixme
 }
 
 func (a *AgentMonteCarlo) Card() *PlayersCards {

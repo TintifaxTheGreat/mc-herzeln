@@ -48,7 +48,7 @@ func (g *Deal) play() {
 				Info("trick "+strconv.Itoa(int(1+g.state.tricksCount)), g.players[i].Card().Show(false))
 			}
 			// lead
-			g.state.lead.index = g.players[g.state.current.player].Lead(g.cardpool, g.state)
+			g.state.lead.index = g.players[g.state.current.player].Play(g.cardpool, g.state, true, 999)
 			g.state.current.index = g.state.lead.index
 			g.state.high = CardValue{
 				index:  g.state.lead.index,
@@ -56,7 +56,7 @@ func (g *Deal) play() {
 			}
 		} else {
 			// pass
-			g.state.current.index = g.players[g.state.current.player].Pass(g.cardpool, g.state, g.state.lead.index)
+			g.state.current.index = g.players[g.state.current.player].Play(g.cardpool, g.state, false, g.state.lead.index)
 
 			if colorMatch(g.state.lead.index, g.state.current.index) &&
 				(g.state.current.value() < g.state.high.value()) {

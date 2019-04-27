@@ -10,22 +10,15 @@ func NewAgentHuman() *AgentHuman {
 	}
 }
 
-func (a *AgentHuman) Lead(pool *Pool, state *Gamestate,) uint {
-	legalCards := state.constraintFirstLead(a.cards.hand, state.tricksCount)
-	fmt.Print("--->LEGAL ")
-	Info("legal",legalCards.ToString())
-	index := uint(0)
-	for {
-		index = a.readInput()
-		if legalCards.isSet(index) {
-			return index
-		}
+func (a *AgentHuman) Play(_ *Pool, state *Gamestate, isLead bool, lead uint) uint {
+	legalCards := new(bitmap)
+	if isLead {
+		legalCards = state.constraintFirstLead(a.cards.hand, state.tricksCount)
+	} else {
+		legalCards = state.constraintPassAll(a.cards.hand, state.tricksCount, lead)
 	}
-}
-
-func (a *AgentHuman) Pass(pool *Pool, state *Gamestate, lead uint) uint {
-	legalCards := state.constraintPassAll(a.cards.hand, state.tricksCount, lead)
 	fmt.Print("--->LEGAL ")
+	fmt.Println(legalCards.ToString())
 	Info("legal",legalCards.ToString())
 	index := uint(0)
 	for {

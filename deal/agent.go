@@ -10,8 +10,7 @@ type Agent struct {
 
 // an interface the agent should implement
 type AgentPlayer interface {
-	Lead(pool *Pool, state *Gamestate) uint
-	Pass(pool *Pool, state *Gamestate, lead uint) uint
+	Play(pool *Pool, state *Gamestate, isLead bool, lead uint) uint
 	Card() *PlayersCards
 	Copy() AgentPlayer
 }
