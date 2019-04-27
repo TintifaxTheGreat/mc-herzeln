@@ -11,6 +11,7 @@ func NewAgentHuman() *AgentHuman {
 }
 
 func (a *AgentHuman) Play(_ *Pool, state *Gamestate, isLead bool, lead uint) uint {
+	// TODO show the order of the cards already on the table
 	legalCards := new(bitmap)
 	if isLead {
 		legalCards = state.constraintFirstLead(a.cards.hand, state.tricksCount)

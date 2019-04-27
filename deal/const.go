@@ -1,8 +1,6 @@
 package deal
 
 const (
-	INFO = false
-
 	BITMAP_SIZE = 64
 
 	PLAYERS uint = 4

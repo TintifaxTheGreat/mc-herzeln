@@ -67,7 +67,5 @@ func randBool() bool {
 }
 
 func Info(t string, s string) {
-	if INFO {
-		fmt.Println(s + " (" + t + ")")
-	}
+	fmt.Println(s + " (" + t + ")")
 }
