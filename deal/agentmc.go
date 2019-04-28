@@ -2,7 +2,6 @@ package deal
 
 import (
 	"context"
-	"fmt"
 	"math/bits"
 	"time"
 )
@@ -40,7 +39,7 @@ func (a *AgentMonteCarlo) playouts(ctx context.Context, pool *Pool, state *Games
 	buddies[state.current.player].Card().tricks = a.cards.tricks
 	buddies[state.current.player].Card().hand = a.cards.hand
 
-	fmt.Println(a.cards.hand.ToString())
+	//Info("hand", a.cards.hand.ToString())
 
 	// calculate the hidden cards
 	hiddenCards := newBitmap(true)
@@ -48,7 +47,7 @@ func (a *AgentMonteCarlo) playouts(ctx context.Context, pool *Pool, state *Games
 	*hiddenCards &^= *pool.Dropped
 	*hiddenCards &^= *pool.OnTable
 
-	fmt.Println(hiddenCards.ToString())
+	//Info("hidden", hiddenCards.ToString())
 
 	rIndex := uint(0)
 	count := uint(0)
@@ -64,10 +63,10 @@ func (a *AgentMonteCarlo) playouts(ctx context.Context, pool *Pool, state *Games
 					maxKey = key
 				}
 			}
-			fmt.Print("Games played: ")
-			fmt.Println(count)
-			fmt.Println(acc)
-			fmt.Println(maxKey)
+			//fmt.Print("Games played: ")
+			//fmt.Println(count)
+			//fmt.Println(acc)
+			//fmt.Println(maxKey)
 			return maxKey
 		default:
 			// copy everything

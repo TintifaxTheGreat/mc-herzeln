@@ -11,16 +11,16 @@ func NewAgentHuman() *AgentHuman {
 }
 
 func (a *AgentHuman) Play(_ *Pool, state *Gamestate, isLead bool, lead uint) uint {
-	// TODO show the order of the cards already on the table
+	fmt.Println("")
+	Info("your cards", a.cards.hand.ToString())
 	legalCards := new(bitmap)
 	if isLead {
 		legalCards = state.constraintFirstLead(a.cards.hand, state.tricksCount)
 	} else {
 		legalCards = state.constraintPassAll(a.cards.hand, state.tricksCount, lead)
 	}
-	fmt.Print("--->LEGAL ")
-	fmt.Println(legalCards.ToString())
-	Info("legal",legalCards.ToString())
+	//Info("legal",legalCards.ToString())
+	fmt.Println(showCardSlice(state.sTable))
 	index := uint(0)
 	for {
 		index = a.readInput()

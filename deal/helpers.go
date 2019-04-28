@@ -56,6 +56,17 @@ func IndexOfCard(s string) (uint, bool) {
 	return index, found
 }
 
+// show cards represented as slice of uints
+func showCardSlice(s []uint) string {
+	result := ""
+	for _, cardIndex := range s {
+		b := new(bitmap)
+		b.set(cardIndex)
+		result += b.ToString()
+	}
+	return result
+}
+
 // Checks if two cards (represented as index) are of the same color
 func colorMatch(a uint, b uint) bool {
 	return a/FIGURES == b/FIGURES
@@ -69,3 +80,4 @@ func randBool() bool {
 func Info(t string, s string) {
 	fmt.Println(s + " (" + t + ")")
 }
+

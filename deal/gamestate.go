@@ -12,6 +12,7 @@ func (cv *CardValue) value() uint {
 type Gamestate struct {
 	tricksCount         uint
 	playCount           uint
+	sTable              []uint
 	lead                CardValue
 	current             CardValue
 	high                CardValue

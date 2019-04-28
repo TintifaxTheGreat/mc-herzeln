@@ -2,7 +2,6 @@ package deal
 
 import (
 	"math/rand"
-	"strconv"
 	"time"
 )
 
@@ -30,7 +29,6 @@ func (g *Deal) Play() [PLAYERS] int {
 }
 
 func (g *Deal) DealCards() {
-	Info("dealing cards", g.cardpool.NotDropped.ToString())
 	var index uint
 	for player := uint(0); player < PLAYERS; player++ {
 		for i := uint(0); i < INHAND; i++ {
@@ -44,9 +42,11 @@ func (g *Deal) DealCards() {
 func (g *Deal) play() {
 	for ; g.state.tricksCount < INHAND; {
 		if g.state.playCount == 0 {
+			/*
 			for i := uint(0); i < PLAYERS; i++ {
 				Info("trick "+strconv.Itoa(int(1+g.state.tricksCount)), g.players[i].Card().Show(false))
 			}
+			*/
 			// lead
 			g.state.lead.index = g.players[g.state.current.player].Play(g.cardpool, g.state, true, 999)
 			g.state.current.index = g.state.lead.index
